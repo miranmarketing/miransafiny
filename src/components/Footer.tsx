@@ -94,10 +94,10 @@ const Footer: React.FC = () => {
             <div className="space-y-2 text-[#E3DCD2]/80">
               <p>Erbil, Kurdistan Region</p>
               <p>Iraq</p>
-              <a href="mailto:contact@miransafiny.com" className="hover:text-[#CC8B65] transition-colors duration-200">
+              <a href="mailto:info@miransafiny.com" className="hover:text-[#CC8B65] transition-colors duration-200">
                 contact@miransafiny.com
               </a>
-              <a href="https://wa.me/9647501234567" className="hover:text-[#CC8B65] transition-colors duration-200">
+              <a href="https://wa.me/9647504459704" className="hover:text-[#CC8B65] transition-colors duration-200">
                 +964 750 123 4567
               </a>
             </div>

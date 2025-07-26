@@ -130,14 +130,14 @@ INSERT INTO website_content (section, key, value, description) VALUES
 ('about', 'content', '{"paragraph1": "Miran Safiny is a visionary entrepreneur and business leader based in Erbil, Kurdistan Region, Iraq. With a sharp eye for emerging trends and a reputation for execution, Miran has built and managed multiple successful ventures across real estate, marketing, and renewable energy sectors.", "paragraph2": "Driven by a belief in sustainable development, customer trust, and regional transformation, Miran continues to pioneer initiatives that bring global business standards to local markets. Whether leading creative campaigns or launching infrastructure projects, his work is always rooted in value creation and long-term impact."}', 'About section content'),
 ('vision', 'vision_text', '"To elevate the business and urban landscape of Kurdistan by creating accessible, ethical, and future-ready solutions."', 'Vision statement'),
 ('vision', 'mission_text', '"To build and support ventures that solve real-world problems through innovation, collaboration, and strategic growth—while maintaining integrity, transparency, and social responsibility."', 'Mission statement'),
-('contact', 'email', '"contact@miransafiny.com"', 'Contact email'),
-('contact', 'phone', '"+964 750 123 4567"', 'Contact phone'),
+('contact', 'email', '"info@miransafiny.com"', 'Contact email'),
+('contact', 'phone', '"+964 750 445 9704"', 'Contact phone'),
 ('contact', 'location', '"Erbil, Kurdistan Region, Iraq"', 'Contact location');
 
 INSERT INTO site_settings (key, value, description) VALUES
 ('site_title', '"Miran Safiny - Vision-Driven Entrepreneur"', 'Website title'),
 ('site_description', '"Shaping the future of business in Kurdistan through innovation, integrity, and purpose."', 'Website description'),
 ('social_linkedin', '"https://linkedin.com/in/miransafiny"', 'LinkedIn URL'),
-('social_instagram', '"https://instagram.com/miransafiny"', 'Instagram URL'),
-('social_twitter', '"https://twitter.com/miran_marketing"', 'Twitter URL'),
-('social_whatsapp', '"https://wa.me/9647501234567"', 'WhatsApp URL');
+('social_instagram', '"https://instagram.com/miran.safiny"', 'Instagram URL'),
+('social_twitter', '"https://twitter.com/mio"', 'Twitter URL'),
+('social_whatsapp', '"https://wa.me/9647504459704"', 'WhatsApp URL');
