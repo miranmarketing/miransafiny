@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Mail, Phone, MapPin, Linkedin, Instagram, Twitter, MessageSquare, Send } from 'lucide-react'
+import { Mail, Phone, MapPin, Linkedin, Instagram, Facebook, MessageSquare, Send } from 'lucide-react'
 import { supabase } from '../lib/supabase' // Assuming supabase is correctly imported and configured
 
 const Contact: React.FC = () => {
@@ -87,14 +87,14 @@ const Contact: React.FC = () => {
     {
       icon: Mail,
       title: "Email",
-      value: "contact@miransafiny.com",
-      link: "mailto:contact@miransafiny.com"
+      value: "info@miransafiny.com",
+      link: "mailto:info@miransafiny.com"
     },
     {
       icon: Phone,
       title: "WhatsApp Business",
-      value: "+964 750 123 4567",
-      link: "https://wa.me/9647501234567"
+      value: "+964 750 445 9704",
+      link: "https://wa.me/9647504459704"
     },
     {
       icon: MapPin,
@@ -108,25 +108,25 @@ const Contact: React.FC = () => {
     {
       icon: Linkedin,
       name: "LinkedIn",
-      url: "https://linkedin.com/in/miransafiny",
+      url: "https://www.linkedin.com/in/miran-safiny-48b375229/",
       color: "blue" // These will be overridden by the new palette
     },
     {
       icon: Instagram,
       name: "Instagram",
-      url: "https://instagram.com/miransafiny",
+      url: "https://instagram.com/miran.safiny",
       color: "pink" // These will be overridden by the new palette
     },
     {
-      icon: Twitter,
-      name: "Twitter",
-      url: "https://twitter.com/miran_marketing",
+      icon: Facebook,
+      name: "Facebook",
+      url: "https://www.facebook.com/Miransafiny",
       color: "sky" // These will be overridden by the new palette
     },
     {
       icon: MessageSquare,
       name: "WhatsApp",
-      url: "https://wa.me/9647501234567",
+      url: "https://wa.me/9647504459704",
       color: "emerald" // These will be overridden by the new palette
     }
   ]

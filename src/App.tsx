@@ -24,13 +24,14 @@ function App() {
         element={
           <Layout>
             <Hero />
+                        <Articles />
+
             <About />
             <Vision />
             <Biography />
             <Achievements />
             <Philosophy />
             <Community />
-            <Articles />
             <Contact />
           </Layout>
         }

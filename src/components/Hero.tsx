@@ -1,5 +1,5 @@
 import React from 'react'
-import { ArrowRight, MapPin, Linkedin, Instagram, Twitter } from 'lucide-react'
+import { ArrowRight, MapPin, Linkedin, Instagram, Facebook } from 'lucide-react'
 
 const Hero: React.FC = () => {
   const scrollToContact = () => {
@@ -71,14 +71,14 @@ const Hero: React.FC = () => {
 
             {/* Social Media Links */}
             <div className="flex justify-center lg:justify-start space-x-6">
-              <a href="#" className="text-[#E3DCD2]/70 hover:text-[#CC8B65] transition-all duration-300 transform hover:scale-110">
+              <a href="https://www.linkedin.com/in/miran-safiny-48b375229/" className="text-[#E3DCD2]/70 hover:text-[#CC8B65] transition-all duration-300 transform hover:scale-110">
                 <Linkedin className="h-6 w-6" />
               </a>
-              <a href="#" className="text-[#E3DCD2]/70 hover:text-[#CC8B65] transition-all duration-300 transform hover:scale-110">
+              <a href="https://www.instagram.com/miran.safiny" className="text-[#E3DCD2]/70 hover:text-[#CC8B65] transition-all duration-300 transform hover:scale-110">
                 <Instagram className="h-6 w-6" />
               </a>
-              <a href="#" className="text-[#E3DCD2]/70 hover:text-[#CC8B65] transition-all duration-300 transform hover:scale-110">
-                <Twitter className="h-6 w-6" />
+              <a href="https://www.facebook.com/Miransafiny" className="text-[#E3DCD2]/70 hover:text-[#CC8B65] transition-all duration-300 transform hover:scale-110">
+                <Facebook className="h-6 w-6" />
               </a>
             </div>
           </div>

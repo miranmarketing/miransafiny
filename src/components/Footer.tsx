@@ -1,5 +1,5 @@
 import React from 'react'
-import { Linkedin, Instagram, Twitter, MessageSquare, ArrowUp } from 'lucide-react'
+import { Linkedin, Instagram, Facebook, MessageSquare, ArrowUp } from 'lucide-react'
 
 const Footer: React.FC = () => {
   const scrollToTop = () => {
@@ -9,7 +9,7 @@ const Footer: React.FC = () => {
   const socialLinks = [
     { icon: Linkedin, url: "https://linkedin.com/in/miransafiny", name: "LinkedIn" },
     { icon: Instagram, url: "https://instagram.com/miransafiny", name: "Instagram" },
-    { icon: Twitter, url: "https://twitter.com/miran_marketing", name: "Twitter" },
+    { icon: Facebook, url: "https://www.facebook.com/Miransafiny", name: "Twitter" },
     { icon: MessageSquare, url: "https://wa.me/9647501234567", name: "WhatsApp" }
   ]
 
