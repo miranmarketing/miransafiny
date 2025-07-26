@@ -17,3 +17,13 @@ export interface Article {
   slug: string
   tags?: string[]
 }
+
+export interface ContactSubmission {
+  id: string
+  name: string
+  email: string
+  subject: string
+  message: string
+  status: 'new' | 'read' | 'replied'
+  created_at: string
+}

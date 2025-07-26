@@ -147,14 +147,19 @@ const ArticleManager: React.FC = () => {
 
   const editArticle = (article: Article) => {
     setEditingArticle(article)
-    setValue('title', article.title)
-    setValue('excerpt', article.excerpt)
-    setValue('content', article.content)
-    setValue('slug', article.slug)
-    setValue('author', article.author)
-    setValue('image_url', article.image_url || '')
-    setValue('tags', article.tags?.join(', ') || '')
-    setValue('published_at', article.published_at ? article.published_at.split('T')[0] : '')
+    
+    // Use setTimeout to ensure form is rendered before setting values
+    setTimeout(() => {
+      setValue('title', article.title)
+      setValue('excerpt', article.excerpt)
+      setValue('content', article.content)
+      setValue('slug', article.slug)
+      setValue('author', article.author)
+      setValue('image_url', article.image_url || '')
+      setValue('tags', article.tags?.join(', ') || '')
+      setValue('published_at', article.published_at ? article.published_at.split('T')[0] : '')
+    }, 100)
+    
     setShowForm(true)
   }
 
@@ -175,14 +180,14 @@ const ArticleManager: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between bg-white rounded-xl shadow-lg p-6">
+      <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl shadow-2xl p-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Articles Management</h1>
-          <p className="text-gray-600">Create, edit, and manage your blog articles.</p>
+          <h1 className="text-2xl font-bold text-white mb-2">Articles Management</h1>
+          <p className="text-slate-300">Create, edit, and manage your blog articles.</p>
         </div>
         <button
           onClick={() => setShowForm(true)}
-          className="flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+          className="flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
         >
           <Plus className="h-5 w-5 mr-2" />
           New Article
@@ -198,8 +203,8 @@ const ArticleManager: React.FC = () => {
             exit={{ opacity: 0, scale: 0.95 }}
             className={`p-4 rounded-lg flex items-center ${
               message.type === 'success' 
-                ? 'bg-emerald-50 border border-emerald-200' 
-                : 'bg-red-50 border border-red-200'
+                ? 'bg-emerald-50 border border-emerald-300 shadow-lg' 
+                : 'bg-red-50 border border-red-300 shadow-lg'
             }`}
           >
             {message.type === 'success' ? (
@@ -227,16 +232,16 @@ const ArticleManager: React.FC = () => {
               initial={{ scale: 0.95, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.95, opacity: 0 }}
-              className="bg-white rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto"
+              className="bg-gradient-to-br from-white to-slate-50 rounded-2xl shadow-2xl w-full max-w-4xl max-h-[90vh] overflow-y-auto border border-slate-200"
             >
-              <div className="p-6 border-b border-gray-200">
+              <div className="p-6 border-b border-slate-200 bg-gradient-to-r from-slate-900 to-slate-800">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-gray-900">
+                  <h2 className="text-2xl font-bold text-white">
                     {editingArticle ? 'Edit Article' : 'Create New Article'}
                   </h2>
                   <button
                     onClick={closeForm}
-                    className="text-gray-500 hover:text-gray-700"
+                    className="text-slate-300 hover:text-white transition-colors duration-200"
                   >
                     <X className="h-6 w-6" />
                   </button>
@@ -251,7 +256,7 @@ const ArticleManager: React.FC = () => {
                     </label>
                     <input
                       {...register('title', { required: 'Title is required' })}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm"
                       placeholder="Article title"
                     />
                     {errors.title && (
@@ -265,7 +270,7 @@ const ArticleManager: React.FC = () => {
                     </label>
                     <input
                       {...register('slug')}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm"
                       placeholder="article-slug (auto-generated if empty)"
                     />
                   </div>
@@ -278,7 +283,7 @@ const ArticleManager: React.FC = () => {
                   <textarea
                     {...register('excerpt', { required: 'Excerpt is required' })}
                     rows={3}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 resize-vertical bg-white shadow-sm"
                     placeholder="Brief description of the article"
                   />
                   {errors.excerpt && (
@@ -293,7 +298,7 @@ const ArticleManager: React.FC = () => {
                   <textarea
                     {...register('content', { required: 'Content is required' })}
                     rows={12}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 resize-vertical"
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 resize-vertical bg-white shadow-sm"
                     placeholder="Write your article content here..."
                   />
                   {errors.content && (
@@ -308,7 +313,7 @@ const ArticleManager: React.FC = () => {
                     </label>
                     <input
                       {...register('author')}
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm"
                       placeholder="Miran Safiny"
                       defaultValue="Miran Safiny"
                     />
@@ -321,7 +326,7 @@ const ArticleManager: React.FC = () => {
                     <input
                       {...register('published_at')}
                       type="date"
-                      className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm"
                     />
                   </div>
                 </div>
@@ -332,7 +337,7 @@ const ArticleManager: React.FC = () => {
                   </label>
                   <input
                     {...register('image_url')}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm"
                     placeholder="https://example.com/image.jpg"
                   />
                 </div>
@@ -343,22 +348,22 @@ const ArticleManager: React.FC = () => {
                   </label>
                   <input
                     {...register('tags')}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full p-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm"
                     placeholder="business, marketing, real estate (comma separated)"
                   />
                 </div>
 
-                <div className="flex justify-end space-x-4 pt-6 border-t border-gray-200">
+                <div className="flex justify-end space-x-4 pt-6 border-t border-slate-200">
                   <button
                     type="button"
                     onClick={closeForm}
-                    className="px-6 py-3 text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+                    className="px-6 py-3 text-slate-600 hover:bg-slate-50 rounded-lg transition-colors duration-200"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200 flex items-center"
+                    className="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center"
                   >
                     <Save className="h-5 w-5 mr-2" />
                     {editingArticle ? 'Update Article' : 'Create Article'}
@@ -371,16 +376,16 @@ const ArticleManager: React.FC = () => {
       </AnimatePresence>
 
       {/* Articles List */}
-      <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+      <div className="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-2xl overflow-hidden border border-slate-200">
         {articles.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-gray-50 border-b border-gray-200">
+              <thead className="bg-gradient-to-r from-slate-800 to-slate-900 border-b border-slate-700">
                 <tr>
-                  <th className="text-left p-4 font-semibold text-gray-900">Title</th>
-                  <th className="text-left p-4 font-semibold text-gray-900">Status</th>
-                  <th className="text-left p-4 font-semibold text-gray-900">Date</th>
-                  <th className="text-left p-4 font-semibold text-gray-900">Actions</th>
+                  <th className="text-left p-4 font-semibold text-white">Title</th>
+                  <th className="text-left p-4 font-semibold text-white">Status</th>
+                  <th className="text-left p-4 font-semibold text-white">Date</th>
+                  <th className="text-left p-4 font-semibold text-white">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -390,16 +395,16 @@ const ArticleManager: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: index * 0.1 }}
-                    className="border-b border-gray-100 hover:bg-gray-50"
+                    className="border-b border-slate-100 hover:bg-slate-50 transition-colors duration-200"
                   >
                     <td className="p-4">
                       <div>
-                        <h3 className="font-semibold text-gray-900 mb-1">{article.title}</h3>
-                        <p className="text-sm text-gray-600 line-clamp-1">{article.excerpt}</p>
+                        <h3 className="font-semibold text-slate-900 mb-1">{article.title}</h3>
+                        <p className="text-sm text-slate-600 line-clamp-1">{article.excerpt}</p>
                         {article.tags && (
                           <div className="flex flex-wrap gap-1 mt-2">
                             {article.tags.slice(0, 3).map((tag, i) => (
-                              <span key={i} className="px-2 py-1 bg-blue-100 text-blue-700 text-xs rounded-full">
+                              <span key={i} className="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">
                                 {tag}
                               </span>
                             ))}
@@ -416,7 +421,7 @@ const ArticleManager: React.FC = () => {
                         {article.published_at ? 'Published' : 'Draft'}
                       </span>
                     </td>
-                    <td className="p-4 text-sm text-gray-600">
+                    <td className="p-4 text-sm text-slate-600">
                       <div className="flex items-center">
                         <Calendar className="h-4 w-4 mr-1" />
                         {new Date(article.created_at).toLocaleDateString()}
@@ -426,7 +431,7 @@ const ArticleManager: React.FC = () => {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => editArticle(article)}
-                          className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
+                          className="p-2 text-amber-600 hover:bg-amber-50 rounded-lg transition-colors duration-200"
                           title="Edit"
                         >
                           <Edit className="h-4 w-4" />
@@ -447,12 +452,12 @@ const ArticleManager: React.FC = () => {
           </div>
         ) : (
           <div className="text-center py-12">
-            <AlertCircle className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">No Articles Yet</h3>
-            <p className="text-gray-600 mb-4">Create your first article to get started.</p>
+            <AlertCircle className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 mb-2">No Articles Yet</h3>
+            <p className="text-slate-600 mb-4">Create your first article to get started.</p>
             <button
               onClick={() => setShowForm(true)}
-              className="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200"
+              className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-white rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg"
             >
               <Plus className="h-5 w-5 mr-2" />
               Create Article

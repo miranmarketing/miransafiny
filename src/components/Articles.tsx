@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Calendar, User, Clock, ArrowRight, Plus, Search } from 'lucide-react'
+import { Calendar, User, Clock, ArrowRight, Plus, Search, ExternalLink } from 'lucide-react'
 import { supabase, Article } from '../lib/supabase'
 
 const Articles: React.FC = () => {
@@ -79,6 +79,10 @@ const Articles: React.FC = () => {
     article.excerpt.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
+  const openArticle = (article: Article) => {
+    // Create a modal or navigate to article detail page
+    alert(`Opening article: ${article.title}\n\nThis would typically open the full article content in a modal or navigate to a dedicated article page.`)
+  }
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
@@ -89,11 +93,11 @@ const Articles: React.FC = () => {
 
   if (loading) {
     return (
-      <section id="articles" className="py-20 bg-white">
+      <section id="articles" className="py-20 bg-gradient-to-br from-slate-50 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading articles...</p>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto"></div>
+            <p className="mt-4 text-slate-600">Loading articles...</p>
           </div>
         </div>
       </section>
@@ -101,12 +105,12 @@ const Articles: React.FC = () => {
   }
 
   return (
-    <section id="articles" className="py-20 bg-white">
+    <section id="articles" className="py-20 bg-gradient-to-br from-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Latest Articles</h2>
-          <div className="w-24 h-1 bg-emerald-600 mx-auto mb-8"></div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <h2 className="text-4xl font-bold text-slate-900 mb-4">Latest Articles</h2>
+          <div className="w-24 h-1 bg-gradient-to-r from-amber-500 to-amber-600 mx-auto mb-8"></div>
+          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
             Insights, analysis, and perspectives on business, technology, and regional development.
           </p>
         </div>
@@ -114,13 +118,13 @@ const Articles: React.FC = () => {
         {/* Search Bar */}
         <div className="max-w-md mx-auto mb-12">
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-slate-400" />
             <input
               type="text"
               placeholder="Search articles..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500"
+              className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white shadow-sm"
             />
           </div>
         </div>
@@ -128,8 +132,12 @@ const Articles: React.FC = () => {
         {/* Articles Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
           {filteredArticles.map((article) => (
-            <article key={article.id} className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden">
-              <div className="h-48 bg-gray-200 overflow-hidden">
+            <article 
+              key={article.id} 
+              className="bg-gradient-to-br from-white to-slate-50 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 overflow-hidden border border-slate-200 cursor-pointer transform hover:scale-105"
+              onClick={() => openArticle(article)}
+            >
+              <div className="h-48 bg-slate-200 overflow-hidden">
                 {article.image_url ? (
                   <img 
                     src={article.image_url} 
@@ -137,41 +145,47 @@ const Articles: React.FC = () => {
                     className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
                   />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-emerald-400 to-blue-500 flex items-center justify-center">
+                  <div className="w-full h-full bg-gradient-to-br from-amber-400 to-slate-600 flex items-center justify-center">
                     <span className="text-white text-lg font-medium">Article</span>
                   </div>
                 )}
               </div>
               
               <div className="p-6">
-                <div className="flex items-center text-sm text-gray-500 mb-3">
+                <div className="flex items-center text-sm text-slate-500 mb-3">
                   <User className="h-4 w-4 mr-1" />
                   <span className="mr-4">{article.author}</span>
                   <Calendar className="h-4 w-4 mr-1" />
                   <span>{formatDate(article.published_at)}</span>
                 </div>
                 
-                <h3 className="text-xl font-semibold text-gray-900 mb-3 line-clamp-2">
+                <h3 className="text-xl font-semibold text-slate-900 mb-3 line-clamp-2">
                   {article.title}
                 </h3>
                 
-                <p className="text-gray-600 mb-4 line-clamp-3">
+                <p className="text-slate-600 mb-4 line-clamp-3">
                   {article.excerpt}
                 </p>
                 
                 {article.tags && (
                   <div className="flex flex-wrap gap-2 mb-4">
                     {article.tags.slice(0, 2).map((tag, index) => (
-                      <span key={index} className="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full">
+                      <span key={index} className="px-3 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">
                         {tag}
                       </span>
                     ))}
                   </div>
                 )}
                 
-                <button className="inline-flex items-center text-emerald-600 hover:text-emerald-700 font-medium transition-colors duration-200">
+                <button 
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    openArticle(article)
+                  }}
+                  className="inline-flex items-center text-amber-600 hover:text-amber-700 font-medium transition-colors duration-200"
+                >
                   Read More
-                  <ArrowRight className="ml-2 h-4 w-4" />
+                  <ExternalLink className="ml-2 h-4 w-4" />
                 </button>
               </div>
             </article>
@@ -180,15 +194,15 @@ const Articles: React.FC = () => {
 
         {filteredArticles.length === 0 && (
           <div className="text-center py-12">
-            <p className="text-gray-600 text-lg">No articles found matching your search.</p>
+            <p className="text-slate-600 text-lg">No articles found matching your search.</p>
           </div>
         )}
 
         {/* Admin Note */}
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 text-center">
-          <Plus className="h-8 w-8 text-blue-600 mx-auto mb-3" />
-          <h3 className="text-lg font-semibold text-blue-900 mb-2">Content Management</h3>
-          <p className="text-blue-700">
+        <div className="bg-gradient-to-r from-slate-800 to-slate-900 border border-slate-700 rounded-lg p-6 text-center">
+          <Plus className="h-8 w-8 text-amber-400 mx-auto mb-3" />
+          <h3 className="text-lg font-semibold text-white mb-2">Content Management</h3>
+          <p className="text-slate-300">
             Articles can be managed through the Supabase dashboard. Connect to Supabase to enable full article management functionality.
           </p>
         </div>
