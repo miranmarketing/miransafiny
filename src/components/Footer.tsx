@@ -7,10 +7,10 @@ const Footer: React.FC = () => {
   }
 
   const socialLinks = [
-    { icon: Linkedin, url: "https://linkedin.com/in/miransafiny", name: "LinkedIn" },
+    { icon: Linkedin, url: "https://www.linkedin.com/in/miran-safiny-48b375229/", name: "LinkedIn" },
     { icon: Instagram, url: "https://instagram.com/miransafiny", name: "Instagram" },
     { icon: Facebook, url: "https://www.facebook.com/Miransafiny", name: "Twitter" },
-    { icon: MessageSquare, url: "https://wa.me/9647501234567", name: "WhatsApp" }
+    { icon: MessageSquare, url: "https://wa.me/9647504459704", name: "WhatsApp" }
   ]
 
   const quickLinks = [
@@ -95,10 +95,10 @@ const Footer: React.FC = () => {
               <p>Erbil, Kurdistan Region</p>
               <p>Iraq</p>
               <a href="mailto:info@miransafiny.com" className="hover:text-[#CC8B65] transition-colors duration-200">
-                contact@miransafiny.com
+                info@miransafiny.com
               </a>
               <a href="https://wa.me/9647504459704" className="hover:text-[#CC8B65] transition-colors duration-200">
-                +964 750 123 4567
+                +964 750 445 9704
               </a>
             </div>
           </div>
