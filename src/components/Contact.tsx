@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { Mail, Phone, MapPin, Linkedin, Instagram, Twitter, MessageSquare, Send } from 'lucide-react'
+import { supabase } from '../lib/supabase' // Assuming supabase is correctly imported and configured
 
 const Contact: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,40 @@ const Contact: React.FC = () => {
     message: ''
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
+
+  // Custom message box function to replace alert()
+  const showMessageBox = (message: string, isSuccess: boolean) => {
+    const messageBox = document.createElement('div');
+    messageBox.style.cssText = `
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: ${isSuccess ? '#013328' : '#CC8B65'};
+      color: ${isSuccess ? '#E3DCD2' : '#100C0D'};
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+      z-index: 1000;
+      text-align: center;
+      font-family: 'Inter', sans-serif;
+      max-width: 80%;
+    `;
+    messageBox.innerHTML = `
+      <p class="text-lg font-bold mb-2">${isSuccess ? 'Success!' : 'Error!'}</p>
+      <p class="mb-4">${message}</p>
+      <button onclick="this.parentNode.remove()" style="
+        background-color: ${isSuccess ? '#CC8B65' : '#100C0D'};
+        color: ${isSuccess ? '#100C0D' : '#E3DCD2'};
+        padding: 8px 16px;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        font-weight: bold;
+      ">Close</button>
+    `;
+    document.body.appendChild(messageBox);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -28,14 +63,14 @@ const Contact: React.FC = () => {
 
       if (error) {
         console.error('Error submitting form:', error)
-        alert('There was an error sending your message. Please try again.')
+        showMessageBox('There was an error sending your message. Please try again.', false);
       } else {
         setFormData({ name: '', email: '', subject: '', message: '' })
-        alert('Thank you for your message! Miran will get back to you soon.')
+        showMessageBox('Thank you for your message! Miran will get back to you soon.', true);
       }
     } catch (error) {
       console.error('Error:', error)
-      alert('There was an error sending your message. Please try again.')
+      showMessageBox('There was an error sending your message. Please try again.', false);
     } finally {
       setIsSubmitting(false)
     }
@@ -74,35 +109,39 @@ const Contact: React.FC = () => {
       icon: Linkedin,
       name: "LinkedIn",
       url: "https://linkedin.com/in/miransafiny",
-      color: "blue"
+      color: "blue" // These will be overridden by the new palette
     },
     {
       icon: Instagram,
       name: "Instagram",
       url: "https://instagram.com/miransafiny",
-      color: "pink"
+      color: "pink" // These will be overridden by the new palette
     },
     {
       icon: Twitter,
       name: "Twitter",
       url: "https://twitter.com/miran_marketing",
-      color: "sky"
+      color: "sky" // These will be overridden by the new palette
     },
     {
       icon: MessageSquare,
       name: "WhatsApp",
       url: "https://wa.me/9647501234567",
-      color: "emerald"
+      color: "emerald" // These will be overridden by the new palette
     }
   ]
 
   return (
-    <section id="contact" className="py-20 bg-gradient-to-br from-slate-50 to-slate-100">
+    // Updated section background to match the dark theme
+    <section id="contact" className="py-20 bg-[#100C0D] text-[#E3DCD2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-slate-900 mb-4">Get In Touch</h2>
-          <div className="w-24 h-1 bg-gradient-to-r from-amber-500 to-amber-600 mx-auto mb-8"></div>
-          <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+          {/* Updated heading text color */}
+          <h2 className="text-4xl font-bold text-[#E3DCD2] mb-4">Get In Touch</h2>
+          {/* Updated divider color to accent */}
+          <div className="w-24 h-1 bg-[#CC8B65] mx-auto mb-8"></div>
+          {/* Updated paragraph text color */}
+          <p className="text-lg text-[#E3DCD2]/80 max-w-2xl mx-auto">
             Ready to discuss partnerships, consultations, or media opportunities? 
             Let's connect and explore how we can work together.
           </p>
@@ -111,21 +150,25 @@ const Contact: React.FC = () => {
         <div className="grid lg:grid-cols-3 gap-12">
           {/* Contact Information */}
           <div className="lg:col-span-1">
-            <div className="bg-gradient-to-br from-slate-900 to-slate-800 p-8 rounded-2xl shadow-2xl">
-              <h3 className="text-2xl font-bold text-white mb-6">Contact Information</h3>
+            {/* Updated contact info card background and shadow */}
+            <div className="bg-gradient-to-br from-[#013328] to-[#100C0D] p-8 rounded-2xl shadow-2xl">
+              {/* Updated heading text color */}
+              <h3 className="text-2xl font-bold text-[#E3DCD2] mb-6">Contact Information</h3>
               
               <div className="space-y-6 mb-8">
                 {contactInfo.map((info, index) => (
                   <div key={index} className="flex items-start space-x-4">
-                    <div className="bg-amber-500/20 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <info.icon className="h-6 w-6 text-amber-400" />
+                    {/* Updated icon background and color */}
+                    <div className="bg-[#CC8B65]/20 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
+                      <info.icon className="h-6 w-6 text-[#CC8B65]" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-white mb-1">{info.title}</h4>
+                      {/* Updated title and value text colors */}
+                      <h4 className="font-semibold text-[#E3DCD2] mb-1">{info.title}</h4>
                       {info.link === "#" ? (
-                        <p className="text-slate-300">{info.value}</p>
+                        <p className="text-[#E3DCD2]/80">{info.value}</p>
                       ) : (
-                        <a href={info.link} className="text-amber-400 hover:text-amber-300 transition-colors duration-200">
+                        <a href={info.link} className="text-[#CC8B65] hover:text-[#CC8B65]/80 transition-colors duration-200">
                           {info.value}
                         </a>
                       )}
@@ -135,17 +178,20 @@ const Contact: React.FC = () => {
               </div>
 
               <div>
-                <h4 className="font-semibold text-white mb-4">Follow Miran</h4>
+                {/* Updated social links heading text color */}
+                <h4 className="font-semibold text-[#E3DCD2] mb-4">Follow Miran</h4>
                 <div className="flex space-x-4">
                   {socialLinks.map((social, index) => (
                     <a
                       key={index}
                       href={social.url}
-                      className="bg-amber-500/20 hover:bg-amber-500/30 w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+                      // Updated social icon background and hover colors
+                      className="bg-[#CC8B65]/20 hover:bg-[#CC8B65]/30 w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 transform hover:scale-110"
                       target="_blank"
                       rel="noopener noreferrer"
                     >
-                      <social.icon className="h-6 w-6 text-amber-400" />
+                      {/* Updated social icon color */}
+                      <social.icon className="h-6 w-6 text-[#CC8B65]" />
                     </a>
                   ))}
                 </div>
@@ -155,13 +201,16 @@ const Contact: React.FC = () => {
 
           {/* Contact Form */}
           <div className="lg:col-span-2">
-            <div className="bg-gradient-to-br from-white to-slate-50 p-8 rounded-2xl shadow-2xl border border-slate-200">
-              <h3 className="text-2xl font-bold text-slate-900 mb-6">Send a Message</h3>
+            {/* Updated form card background, shadow, and border */}
+            <div className="bg-[#013328] p-8 rounded-2xl shadow-2xl border border-[#CC8B65]/30">
+              {/* Updated form heading text color */}
+              <h3 className="text-2xl font-bold text-[#E3DCD2] mb-6">Send a Message</h3>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm font-medium text-slate-700 mb-2">
+                    {/* Updated label text color */}
+                    <label htmlFor="name" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
                       Full Name
                     </label>
                     <input
@@ -171,13 +220,15 @@ const Contact: React.FC = () => {
                       value={formData.name}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200 bg-white shadow-sm"
+                      // Updated input field styling for dark theme
+                      className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
                       placeholder="Your full name"
                     />
                   </div>
                   
                   <div>
-                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 mb-2">
+                    {/* Updated label text color */}
+                    <label htmlFor="email" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
                       Email Address
                     </label>
                     <input
@@ -187,14 +238,16 @@ const Contact: React.FC = () => {
                       value={formData.email}
                       onChange={handleChange}
                       required
-                      className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200 bg-white shadow-sm"
+                      // Updated input field styling for dark theme
+                      className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
                       placeholder="your.email@example.com"
                     />
                   </div>
                 </div>
 
                 <div>
-                  <label htmlFor="subject" className="block text-sm font-medium text-slate-700 mb-2">
+                  {/* Updated label text color */}
+                  <label htmlFor="subject" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
                     Subject
                   </label>
                   <input
@@ -204,13 +257,15 @@ const Contact: React.FC = () => {
                     value={formData.subject}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200 bg-white shadow-sm"
+                    // Updated input field styling for dark theme
+                    className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
                     placeholder="What's this about?"
                   />
                 </div>
 
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
+                  {/* Updated label text color */}
+                  <label htmlFor="message" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
                     Message
                   </label>
                   <textarea
@@ -220,7 +275,8 @@ const Contact: React.FC = () => {
                     onChange={handleChange}
                     required
                     rows={6}
-                    className="w-full px-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 transition-colors duration-200 resize-vertical bg-white shadow-sm"
+                    // Updated textarea styling for dark theme
+                    className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 resize-vertical bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
                     placeholder="Tell Miran about your project, partnership idea, or inquiry..."
                   />
                 </div>
@@ -228,11 +284,12 @@ const Contact: React.FC = () => {
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 disabled:from-amber-400 disabled:to-amber-500 text-white font-semibold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
+                  // Updated button gradient and text colors for dark theme
+                  className="w-full bg-gradient-to-r from-[#CC8B65] to-[#CC8B65]/80 hover:from-[#CC8B65]/80 hover:to-[#CC8B65] disabled:from-[#CC8B65]/50 disabled:to-[#CC8B65]/60 text-[#100C0D] font-semibold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#100C0D] mr-2"></div>
                       Sending...
                     </>
                   ) : (

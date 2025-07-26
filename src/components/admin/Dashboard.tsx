@@ -3,7 +3,11 @@ import { supabase } from '../../lib/supabase'
 import { FileText, Users, Eye, TrendingUp, Calendar, Edit } from 'lucide-react'
 import { motion } from 'framer-motion'
 
-const Dashboard: React.FC = () => {
+interface DashboardProps {
+  onPageChange: (page: string) => void
+}
+
+const Dashboard: React.FC<DashboardProps> = ({ onPageChange }) => {
   const [stats, setStats] = useState({
     totalArticles: 0,
     publishedArticles: 0,
@@ -116,7 +120,10 @@ const Dashboard: React.FC = () => {
       <div className="bg-white rounded-xl shadow-lg p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-900">Recent Articles</h2>
-          <button className="text-blue-600 hover:text-blue-700 font-medium text-sm">
+          <button 
+            onClick={() => onPageChange('articles')}
+            className="text-blue-600 hover:text-blue-700 font-medium text-sm"
+          >
             View All
           </button>
         </div>
@@ -164,13 +171,19 @@ const Dashboard: React.FC = () => {
         <div className="bg-white rounded-xl shadow-lg p-6">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Quick Actions</h3>
           <div className="space-y-3">
-            <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition-colors duration-200">
+            <button 
+              onClick={() => onPageChange('articles')}
+              className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-blue-50 hover:border-blue-200 transition-colors duration-200"
+            >
               <div className="flex items-center">
                 <FileText className="h-5 w-5 text-blue-600 mr-3" />
                 <span className="font-medium text-gray-900">Create New Article</span>
               </div>
             </button>
-            <button className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 transition-colors duration-200">
+            <button 
+              onClick={() => onPageChange('content')}
+              className="w-full text-left p-3 rounded-lg border border-gray-200 hover:bg-emerald-50 hover:border-emerald-200 transition-colors duration-200"
+            >
               <div className="flex items-center">
                 <Edit className="h-5 w-5 text-emerald-600 mr-3" />
                 <span className="font-medium text-gray-900">Edit Website Content</span>

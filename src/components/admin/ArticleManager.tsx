@@ -12,7 +12,8 @@ import {
   Tag,
   Image,
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  ArrowLeft
 } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 
@@ -41,7 +42,11 @@ interface ArticleFormData {
   published_at: string
 }
 
-const ArticleManager: React.FC = () => {
+interface ArticleManagerProps {
+  onPageChange?: (page: string) => void
+}
+
+const ArticleManager: React.FC<ArticleManagerProps> = ({ onPageChange }) => {
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -181,9 +186,20 @@ const ArticleManager: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 to-slate-800 rounded-xl shadow-2xl p-6">
-        <div>
-          <h1 className="text-2xl font-bold text-white mb-2">Articles Management</h1>
-          <p className="text-slate-300">Create, edit, and manage your blog articles.</p>
+        <div className="flex items-center">
+          {onPageChange && (
+            <button
+              onClick={() => onPageChange('dashboard')}
+              className="mr-4 p-2 text-slate-300 hover:text-white transition-colors duration-200"
+              title="Back to Dashboard"
+            >
+              <ArrowLeft className="h-6 w-6" />
+            </button>
+          )}
+          <div>
+            <h1 className="text-2xl font-bold text-white mb-2">Articles Management</h1>
+            <p className="text-slate-300">Create, edit, and manage your blog articles.</p>
+          </div>
         </div>
         <button
           onClick={() => setShowForm(true)}
@@ -470,3 +486,8 @@ const ArticleManager: React.FC = () => {
 }
 
 export default ArticleManager
+
+
+
+
+

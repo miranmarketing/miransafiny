@@ -26,12 +26,16 @@ const Community: React.FC = () => {
   ]
 
   return (
-    <section className="py-20 bg-white">
+    /* Updated section background to match the dark theme */
+    <section className="py-20 bg-[#100C0D] text-[#E3DCD2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Community & Social Engagement</h2>
-          <div className="w-24 h-1 bg-emerald-600 mx-auto mb-8"></div>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          {/* Updated heading text color */}
+          <h2 className="text-4xl font-bold text-[#E3DCD2] mb-4">Community & Social Engagement</h2>
+          {/* Updated divider color to accent */}
+          <div className="w-24 h-1 bg-[#CC8B65] mx-auto mb-8"></div>
+          {/* Updated paragraph text color */}
+          <p className="text-lg text-[#E3DCD2]/80 max-w-3xl mx-auto">
             Beyond business, Miran actively supports initiatives that strengthen communities 
             and create positive social impact throughout Kurdistan.
           </p>
@@ -40,19 +44,23 @@ const Community: React.FC = () => {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8 mb-16">
           {initiatives.map((initiative, index) => (
             <div key={index} className="text-center group">
-              <div className="bg-emerald-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-emerald-200 transition-colors duration-300">
-                <initiative.icon className="h-10 w-10 text-emerald-600" />
+              {/* Updated icon background and color for dark theme */}
+              <div className="bg-[#013328] w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:bg-[#CC8B65]/20 transition-colors duration-300">
+                <initiative.icon className="h-10 w-10 text-[#CC8B65]" />
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">{initiative.title}</h3>
-              <p className="text-gray-600">{initiative.description}</p>
+              {/* Updated title and description text colors */}
+              <h3 className="text-lg font-semibold text-[#E3DCD2] mb-3">{initiative.title}</h3>
+              <p className="text-[#E3DCD2]/80">{initiative.description}</p>
             </div>
           ))}
         </div>
 
-        <div className="bg-gradient-to-r from-emerald-50 to-blue-50 p-8 rounded-2xl">
+        {/* Updated background for the "Making a Difference" section */}
+        <div className="bg-gradient-to-r from-[#013328] to-[#CC8B65] p-8 rounded-2xl">
           <div className="text-center">
-            <h3 className="text-2xl font-bold text-gray-900 mb-4">Making a Difference</h3>
-            <p className="text-lg text-gray-700 max-w-3xl mx-auto leading-relaxed">
+            {/* Updated heading and paragraph text colors */}
+            <h3 className="text-2xl font-bold text-[#E3DCD2] mb-4">Making a Difference</h3>
+            <p className="text-lg text-[#E3DCD2]/80 max-w-3xl mx-auto leading-relaxed">
               Miran actively collaborates with local organizations, startups, and municipalities 
               to contribute to a more dynamic and livable future. His commitment extends beyond 
               business success to meaningful community impact and sustainable development.

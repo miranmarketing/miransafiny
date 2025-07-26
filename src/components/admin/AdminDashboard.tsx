@@ -13,7 +13,7 @@ const AdminDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 ">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     )
@@ -26,15 +26,15 @@ const AdminDashboard: React.FC = () => {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'dashboard':
-        return <Dashboard />
+        return <Dashboard onPageChange={setCurrentPage} />
       case 'content':
-        return <ContentManager />
+        return <ContentManager onPageChange={setCurrentPage} />
       case 'articles':
-        return <ArticleManager />
+        return <ArticleManager onPageChange={setCurrentPage} />
       case 'settings':
         return <Settings />
       default:
-        return <Dashboard />
+        return <Dashboard onPageChange={setCurrentPage} />
     }
   }
 
