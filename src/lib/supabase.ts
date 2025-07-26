@@ -18,3 +18,16 @@ export interface Article {
   slug: string
   tags?: string[]
 }
+<<<<<<< HEAD
+=======
+
+export interface ContactSubmission {
+  id: string
+  name: string
+  email: string
+  subject: string
+  message: string
+  status: 'new' | 'read' | 'replied'
+  created_at: string
+}
+>>>>>>> 3bf908e9dbed3b3f705138417e2bd665363002c6
