@@ -1,1 +1,7 @@
-/*    /index.html   200
+# Redirect specific paths to home
+/about               /index.html   200
+/properties/*        /index.html   200
+/branches/*          /index.html   200
+
+# Fallback rule for SPA
+/*                   /index.html   200
