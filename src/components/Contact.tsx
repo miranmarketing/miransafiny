@@ -1,8 +1,10 @@
 import React, { useState } from 'react'
 import { Mail, Phone, MapPin, Linkedin, Instagram, Facebook, MessageSquare, Send } from 'lucide-react'
 import { supabase } from '../lib/supabase' // Assuming supabase is correctly imported and configured
+import { useLanguage } from '../contexts/LanguageContext'
 
 const Contact: React.FC = () => {
+  const { t } = useLanguage()
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -86,20 +88,20 @@ const Contact: React.FC = () => {
   const contactInfo = [
     {
       icon: Mail,
-      title: "Email",
+      title: t('contact.email'),
       value: "info@miransafiny.com",
       link: "mailto:info@miransafiny.com"
     },
     {
       icon: Phone,
-      title: "WhatsApp Business",
+      title: t('contact.whatsapp'),
       value: "+964 750 445 9704",
       link: "https://wa.me/9647504459704"
     },
     {
       icon: MapPin,
-      title: "Location",
-      value: "Erbil, Kurdistan Region, Iraq",
+      title: t('contact.location'),
+      value: t('hero.location'),
       link: "#"
     }
   ]
@@ -137,13 +139,12 @@ const Contact: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           {/* Updated heading text color */}
-          <h2 className="text-4xl font-bold text-[#E3DCD2] mb-4">Get In Touch</h2>
+          <h2 className="text-4xl font-bold text-[#E3DCD2] mb-4">{t('contact.title')}</h2>
           {/* Updated divider color to accent */}
           <div className="w-24 h-1 bg-[#CC8B65] mx-auto mb-8"></div>
           {/* Updated paragraph text color */}
           <p className="text-lg text-[#E3DCD2]/80 max-w-2xl mx-auto">
-            Ready to discuss partnerships, consultations, or media opportunities? 
-            Let's connect and explore how we can work together.
+            {t('contact.description')}
           </p>
         </div>
 
@@ -153,7 +154,7 @@ const Contact: React.FC = () => {
             {/* Updated contact info card background and shadow */}
             <div className="bg-gradient-to-br from-[#013328] to-[#100C0D] p-8 rounded-2xl shadow-2xl">
               {/* Updated heading text color */}
-              <h3 className="text-2xl font-bold text-[#E3DCD2] mb-6">Contact Information</h3>
+              <h3 className="text-2xl font-bold text-[#E3DCD2] mb-6">{t('contact.info')}</h3>
               
               <div className="space-y-6 mb-8">
                 {contactInfo.map((info, index) => (
@@ -179,7 +180,7 @@ const Contact: React.FC = () => {
 
               <div>
                 {/* Updated social links heading text color */}
-                <h4 className="font-semibold text-[#E3DCD2] mb-4">Follow Miran</h4>
+                <h4 className="font-semibold text-[#E3DCD2] mb-4">{t('contact.follow')}</h4>
                 <div className="flex space-x-4">
                   {socialLinks.map((social, index) => (
                     <a
@@ -204,14 +205,14 @@ const Contact: React.FC = () => {
             {/* Updated form card background, shadow, and border */}
             <div className="bg-[#013328] p-8 rounded-2xl shadow-2xl border border-[#CC8B65]/30">
               {/* Updated form heading text color */}
-              <h3 className="text-2xl font-bold text-[#E3DCD2] mb-6">Send a Message</h3>
+              <h3 className="text-2xl font-bold text-[#E3DCD2] mb-6">{t('contact.sendMessage')}</h3>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
                     {/* Updated label text color */}
                     <label htmlFor="name" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
-                      Full Name
+                      {t('contact.fullName')}
                     </label>
                     <input
                       type="text"
@@ -222,14 +223,14 @@ const Contact: React.FC = () => {
                       required
                       // Updated input field styling for dark theme
                       className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
-                      placeholder="Your full name"
+                      placeholder={t('contact.fullName')}
                     />
                   </div>
                   
                   <div>
                     {/* Updated label text color */}
                     <label htmlFor="email" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
-                      Email Address
+                      {t('contact.emailAddress')}
                     </label>
                     <input
                       type="email"
@@ -248,7 +249,7 @@ const Contact: React.FC = () => {
                 <div>
                   {/* Updated label text color */}
                   <label htmlFor="subject" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
-                    Subject
+                    {t('contact.subject')}
                   </label>
                   <input
                     type="text"
@@ -259,14 +260,14 @@ const Contact: React.FC = () => {
                     required
                     // Updated input field styling for dark theme
                     className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
-                    placeholder="What's this about?"
+                    placeholder={t('contact.subject')}
                   />
                 </div>
 
                 <div>
                   {/* Updated label text color */}
                   <label htmlFor="message" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
-                    Message
+                    {t('contact.message')}
                   </label>
                   <textarea
                     id="message"
@@ -277,7 +278,7 @@ const Contact: React.FC = () => {
                     rows={6}
                     // Updated textarea styling for dark theme
                     className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 resize-vertical bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
-                    placeholder="Tell Miran about your project, partnership idea, or inquiry..."
+                    placeholder={t('contact.message')}
                   />
                 </div>
 
@@ -290,11 +291,11 @@ const Contact: React.FC = () => {
                   {isSubmitting ? (
                     <>
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#100C0D] mr-2"></div>
-                      Sending...
+                      {t('contact.sending')}
                     </>
                   ) : (
                     <>
-                      Send Message
+                      {t('contact.send')}
                       <Send className="ml-2 h-5 w-5" />
                     </>
                   )}

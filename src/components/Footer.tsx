@@ -1,7 +1,10 @@
 import React from 'react'
 import { Linkedin, Instagram, Facebook, MessageSquare, ArrowUp } from 'lucide-react'
+import { useLanguage } from '../contexts/LanguageContext'
 
 const Footer: React.FC = () => {
+  const { t } = useLanguage()
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -14,11 +17,11 @@ const Footer: React.FC = () => {
   ]
 
   const quickLinks = [
-    { name: "About", href: "#about" },
-    { name: "Vision", href: "#vision" },
-    { name: "Achievements", href: "#achievements" },
-    { name: "Articles", href: "#articles" },
-    { name: "Contact", href: "#contact" }
+    { name: t('nav.about'), href: "#about" },
+    { name: t('nav.vision'), href: "#vision" },
+    { name: t('nav.achievements'), href: "#achievements" },
+    { name: t('nav.articles'), href: "#articles" },
+    { name: t('nav.contact'), href: "#contact" }
   ]
 
   const scrollToSection = (sectionId: string) => {
@@ -45,11 +48,10 @@ const Footer: React.FC = () => {
           {/* Brand Section */}
           <div className="md:col-span-2">
             {/* Updated heading text color */}
-            <h3 className="text-2xl font-bold mb-4 text-[#E3DCD2]">Miran Safiny</h3>
+            <h3 className="text-2xl font-bold mb-4 text-[#E3DCD2]">{t('hero.title')}</h3>
             {/* Updated paragraph text color */}
             <p className="text-[#E3DCD2]/80 mb-6 max-w-md">
-              Vision-driven entrepreneur shaping the future of business in Kurdistan through 
-              innovation, integrity, and purpose.
+              {t('footer.description')}
             </p>
             <div className="flex space-x-4">
               {socialLinks.map((social, index) => (
@@ -71,7 +73,7 @@ const Footer: React.FC = () => {
           {/* Quick Links */}
           <div>
             {/* Updated heading text color */}
-            <h4 className="text-lg font-semibold mb-4 text-[#E3DCD2]">Quick Links</h4>
+            <h4 className="text-lg font-semibold mb-4 text-[#E3DCD2]">{t('footer.quickLinks')}</h4>
             <ul className="space-y-2">
               {quickLinks.map((link, index) => (
                 <li key={index}>
@@ -90,10 +92,9 @@ const Footer: React.FC = () => {
           {/* Contact Info */}
           <div>
             {/* Updated heading text color */}
-            <h4 className="text-lg font-semibold mb-4 text-[#E3DCD2]">Contact</h4>
+            <h4 className="text-lg font-semibold mb-4 text-[#E3DCD2]">{t('footer.contact')}</h4>
             <div className="space-y-2 text-[#E3DCD2]/80">
-              <p>Erbil, Kurdistan Region</p>
-              <p>Iraq</p>
+              <p>{t('hero.location')}</p>
               <a href="mailto:info@miransafiny.com" className="hover:text-[#CC8B65] transition-colors duration-200">
                 info@miransafiny.com
               </a>
@@ -108,12 +109,12 @@ const Footer: React.FC = () => {
         <div className="border-t border-[#013328] pt-8 flex flex-col md:flex-row justify-between items-center">
           {/* Updated copyright text color */}
           <p className="text-[#E3DCD2]/60 text-sm mb-4 md:mb-0">
-            © {new Date().getFullYear()} Miran Safiny. All rights reserved.
+            © {new Date().getFullYear()} {t('hero.title')}. {t('footer.rights')}
           </p>
           <div className="flex space-x-6 text-sm text-[#E3DCD2]/60">
-            <a href="#" className="hover:text-[#CC8B65] transition-colors duration-200">Privacy Policy</a>
-            <a href="#" className="hover:text-[#CC8B65] transition-colors duration-200">Terms of Service</a>
-            <a href="#" className="hover:text-[#CC8B65] transition-colors duration-200">Sitemap</a>
+            <a href="#" className="hover:text-[#CC8B65] transition-colors duration-200">{t('footer.privacy')}</a>
+            <a href="#" className="hover:text-[#CC8B65] transition-colors duration-200">{t('footer.terms')}</a>
+            <a href="#" className="hover:text-[#CC8B65] transition-colors duration-200">{t('footer.sitemap')}</a>
           </div>
         </div>
       </div>

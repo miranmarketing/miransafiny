@@ -1,0 +1,23 @@
+User-agent: *
+Allow: /
+
+# Sitemaps
+Sitemap: https://miransafiny.com/sitemap.xml
+
+# Specific pages
+Allow: /
+Allow: /articles
+Allow: /articles/*
+Allow: /ku
+Allow: /ar
+
+# Block admin areas
+Disallow: /admin
+Disallow: /admin/*
+
+# Allow search engines to crawl all languages
+Allow: /ku/*
+Allow: /ar/*
+
+# Crawl delay
+Crawl-delay: 1

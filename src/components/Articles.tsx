@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Calendar, User, Search, ExternalLink } from 'lucide-react'
 import { supabase, Article } from '../lib/supabase'
 import { useNavigate } from 'react-router-dom'
+import { useLanguage } from '../contexts/LanguageContext'
 
 // Define a SkeletonArticleCard component
 const SkeletonArticleCard: React.FC = () => (
@@ -33,6 +34,7 @@ const Articles: React.FC = () => {
   const [page, setPage] = useState(1)
   const [pageSize] = useState(6)
   const [totalArticles, setTotalArticles] = useState(0)
+  const { t } = useLanguage()
 
   const navigate = useNavigate()
 
@@ -103,10 +105,10 @@ const Articles: React.FC = () => {
     <section id="articles" className="py-20 bg-[#100C0D] text-[#E3DCD2]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-[#E3DCD2] mb-4">Latest Articles</h2>
+          <h2 className="text-4xl font-bold text-[#E3DCD2] mb-4">{t('articles.title')}</h2>
           <div className="w-24 h-1 bg-[#CC8B65] mx-auto mb-8"></div>
           <p className="text-lg text-[#E3DCD2]/80 max-w-2xl mx-auto">
-            Insights, analysis, and perspectives on business, technology, and regional development.
+            {t('articles.description')}
           </p>
         </div>
 
@@ -116,7 +118,7 @@ const Articles: React.FC = () => {
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-[#E3DCD2]/60" />
             <input
               type="text"
-              placeholder="Search articles..."
+              placeholder={t('articles.search')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-[#013328] rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] bg-[#013328] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
@@ -187,7 +189,7 @@ const Articles: React.FC = () => {
                       }}
                       className="inline-flex items-center text-[#CC8B65] hover:text-[#CC8B65]/80 font-medium transition-colors duration-200"
                     >
-                      Read More
+                      {t('articles.readMore')}
                       <ExternalLink className="ml-2 h-4 w-4" />
                     </button>
                   </div>
@@ -196,7 +198,7 @@ const Articles: React.FC = () => {
             ) : (
               // Display "No articles found" only when not loading and articles array is empty
               <div className="text-center py-12 col-span-full">
-                <p className="text-[#E3DCD2]/70 text-lg">No articles found matching your search.</p>
+                <p className="text-[#E3DCD2]/70 text-lg">{t('articles.noArticles')}</p>
               </div>
             )
           )}
