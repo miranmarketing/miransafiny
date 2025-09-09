@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react'; // Import useEffect
 import { Routes, Route, useLocation } from 'react-router-dom'; // Import useLocation
 import GA4 from 'react-ga4'; // Import react-ga4
-import { useLanguage } from './contexts/LanguageContext';
-import SEOHead from './components/SEOHead';
 
 // Import your components
 import AdminDashboard from './components/admin/AdminDashboard';
@@ -31,7 +29,6 @@ if (GA_MEASUREMENT_ID && GA_MEASUREMENT_ID !== 'G-CFDPT88JC9') {
 // A custom component to track route changes
 const RouteChangeTracker: React.FC = () => {
   const location = useLocation();
-  const { language } = useLanguage();
 
   useEffect(() => {
     if (GA_MEASUREMENT_ID && GA_MEASUREMENT_ID !== 'G-CFDPT88JC9') {
@@ -41,11 +38,6 @@ const RouteChangeTracker: React.FC = () => {
     }
   }, [location]); // Re-run effect whenever location changes
 
-  // Update document language and direction
-  useEffect(() => {
-    document.documentElement.lang = language;
-    document.documentElement.dir = language === 'ar' || language === 'ku' ? 'rtl' : 'ltr';
-  }, [language]);
   return null; // This component doesn't render anything visible
 };
 
@@ -57,8 +49,6 @@ function App() {
     // If not, you'd add <BrowserRouter> around <Routes> here.
     <>
       <RouteChangeTracker /> {/* Add the route tracker here */}
-
-      <SEOHead />
 
       <Routes>
         <Route path="/admin/*" element={<AdminDashboard />} />

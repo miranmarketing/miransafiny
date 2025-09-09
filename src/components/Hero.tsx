@@ -1,10 +1,7 @@
 import React from 'react'
 import { ArrowRight, MapPin, Linkedin, Instagram, Facebook } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext'
 
 const Hero: React.FC = () => {
-  const { t } = useLanguage()
-
   const scrollToContact = () => {
     const element = document.querySelector('#contact')
     if (element) {
@@ -35,22 +32,22 @@ const Hero: React.FC = () => {
               {/* MapPin icon color updated */}
               <MapPin className="h-5 w-5 text-[#CC8B65] mr-2" />
               {/* Location text color updated */}
-              <span className="text-[#CC8B65] font-medium">{t('hero.location')}</span>
+              <span className="text-[#CC8B65] font-medium">Erbil, Kurdistan Region, Iraq</span>
             </div>
 
             {/* Title text color updated */}
             <h1 className="text-5xl lg:text-6xl font-bold text-[#E3DCD2] mb-6 leading-tight">
-              {t('hero.title')}
+              Miran Safiny
             </h1>
 
             {/* Subtitle text color updated */}
             <p className="text-xl lg:text-2xl text-[#E3DCD2] mb-8 font-light">
-              {t('hero.subtitle')}
+              Vision-Driven Entrepreneur | Marketing Strategist | Real Estate Leader
             </p>
 
             {/* Description text color updated */}
             <p className="text-lg text-[#E3DCD2] mb-10 max-w-2xl mx-auto lg:mx-0">
-              {t('hero.description')}
+              Shaping the future of business in Kurdistan through innovation, integrity, and purpose.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start mb-12">
@@ -59,7 +56,7 @@ const Hero: React.FC = () => {
                 // Updated button gradient colors
                 className="inline-flex items-center px-8 py-4 bg-[#CC8B65] hover:bg-[#CC8B65]/80 text-[#100C0D] font-semibold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-2xl"
               >
-                {t('hero.getInTouch')}
+                Get In Touch
                 <ArrowRight className="ml-2 h-5 w-5" />
               </button>
 
@@ -68,7 +65,7 @@ const Hero: React.FC = () => {
                 // Updated border and hover colors
                 className="inline-flex items-center px-8 py-4 border-2 border-[#E3DCD2]/30 hover:border-[#CC8B65] text-[#E3DCD2] font-semibold rounded-lg transition-all duration-300 hover:bg-[#E3DCD2]/10 hover:shadow-lg"
               >
-                {t('hero.learnMore')}
+                Learn More
               </button>
             </div>
 

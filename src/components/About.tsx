@@ -1,10 +1,7 @@
 import React from 'react'
 import { Target, Lightbulb, Users, Award } from 'lucide-react'
-import { useLanguage } from '../contexts/LanguageContext'
 
 const About: React.FC = () => {
-  const { t } = useLanguage()
-
   const highlights = [
     {
       icon: Target,
@@ -34,7 +31,7 @@ const About: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-16">
           {/* Updated heading text color */}
-          <h2 className="text-4xl font-bold text-[#E3DCD2] mb-4">{t('about.title')}</h2>
+          <h2 className="text-4xl font-bold text-[#E3DCD2] mb-4">About Miran</h2>
           {/* Updated divider color to accent */}
           <div className="w-24 h-1 bg-[#CC8B65] mx-auto mb-8"></div>
         </div>
@@ -43,11 +40,16 @@ const About: React.FC = () => {
           <div>
             {/* Updated paragraph text colors */}
             <p className="text-lg text-[#E3DCD2] mb-6 leading-relaxed">
-              {t('about.description1')}
+              Miran Safiny is a visionary entrepreneur and business leader based in Erbil, Kurdistan Region, Iraq. 
+              With a sharp eye for emerging trends and a reputation for execution, Miran has built and managed 
+              multiple successful ventures across real estate, marketing, and renewable energy sectors.
             </p>
             
             <p className="text-lg text-[#E3DCD2] mb-8 leading-relaxed">
-              {t('about.description2')}
+              Driven by a belief in sustainable development, customer trust, and regional transformation, 
+              Miran continues to pioneer initiatives that bring global business standards to local markets. 
+              Whether leading creative campaigns or launching infrastructure projects, his work is always 
+              rooted in value creation and long-term impact.
             </p>
 
             <div className="flex flex-wrap gap-4">
