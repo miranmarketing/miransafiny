@@ -1,56 +1,24 @@
 import React, { useState } from 'react'
 import { Mail, Phone, MapPin, Linkedin, Instagram, Facebook, MessageSquare, Send } from 'lucide-react'
-import { supabase } from '../lib/supabase' // Assuming supabase is correctly imported and configured
+import { supabase } from '../lib/supabase'
+
+const ACCENT = '#007BFF' // Miran blue
 
 const Contact: React.FC = () => {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    subject: '',
-    message: ''
-  })
+  const [formData, setFormData] = useState({ name: '', email: '', subject: '', message: '' })
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [toast, setToast] = useState<{ type: 'ok' | 'err'; text: string } | null>(null)
 
-  // Custom message box function to replace alert()
   const showMessageBox = (message: string, isSuccess: boolean) => {
-    const messageBox = document.createElement('div');
-    messageBox.style.cssText = `
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background-color: ${isSuccess ? '#013328' : '#CC8B65'};
-      color: ${isSuccess ? '#E3DCD2' : '#100C0D'};
-      padding: 20px;
-      border-radius: 8px;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-      z-index: 1000;
-      text-align: center;
-      font-family: 'Inter', sans-serif;
-      max-width: 80%;
-    `;
-    messageBox.innerHTML = `
-      <p class="text-lg font-bold mb-2">${isSuccess ? 'Success!' : 'Error!'}</p>
-      <p class="mb-4">${message}</p>
-      <button onclick="this.parentNode.remove()" style="
-        background-color: ${isSuccess ? '#CC8B65' : '#100C0D'};
-        color: ${isSuccess ? '#100C0D' : '#E3DCD2'};
-        padding: 8px 16px;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: bold;
-      ">Close</button>
-    `;
-    document.body.appendChild(messageBox);
-  };
+    // keep your helper but style it to match site + auto-dismiss
+    setToast({ type: isSuccess ? 'ok' : 'err', text: message })
+    setTimeout(() => setToast(null), 3500)
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
     try {
-      // Store form submission in Supabase
       const { error } = await supabase
         .from('contact_submissions')
         .insert([{
@@ -63,112 +31,90 @@ const Contact: React.FC = () => {
 
       if (error) {
         console.error('Error submitting form:', error)
-        showMessageBox('There was an error sending your message. Please try again.', false);
+        showMessageBox('There was an error sending your message. Please try again.', false)
       } else {
         setFormData({ name: '', email: '', subject: '', message: '' })
-        showMessageBox('Thank you for your message! Miran will get back to you soon.', true);
+        showMessageBox('Thank you! We’ll get back to you soon.', true)
       }
-    } catch (error) {
-      console.error('Error:', error)
-      showMessageBox('There was an error sending your message. Please try again.', false);
+    } catch (err) {
+      console.error('Error:', err)
+      showMessageBox('There was an error sending your message. Please try again.', false)
     } finally {
       setIsSubmitting(false)
     }
   }
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    })
-  }
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setFormData({ ...formData, [e.target.name]: e.target.value })
 
   const contactInfo = [
-    {
-      icon: Mail,
-      title: "Email",
-      value: "info@miransafiny.com",
-      link: "mailto:info@miransafiny.com"
-    },
-    {
-      icon: Phone,
-      title: "WhatsApp Business",
-      value: "+964 750 445 9704",
-      link: "https://wa.me/9647504459704"
-    },
-    {
-      icon: MapPin,
-      title: "Location",
-      value: "Erbil, Kurdistan Region, Iraq",
-      link: "#"
-    }
+    { icon: Mail,  title: 'Email',              value: 'info@miransafiny.com',        link: 'mailto:info@miransafiny.com' },
+    { icon: Phone, title: 'WhatsApp Business',  value: '+964 750 445 9704',           link: 'https://wa.me/9647504459704' },
+    { icon: MapPin,title: 'Location',           value: 'Erbil, Kurdistan Region, Iraq', link: '#' }
   ]
 
   const socialLinks = [
-    {
-      icon: Linkedin,
-      name: "LinkedIn",
-      url: "https://www.linkedin.com/in/miran-safiny-48b375229/",
-      color: "blue" // These will be overridden by the new palette
-    },
-    {
-      icon: Instagram,
-      name: "Instagram",
-      url: "https://instagram.com/miran.safiny",
-      color: "pink" // These will be overridden by the new palette
-    },
-    {
-      icon: Facebook,
-      name: "Facebook",
-      url: "https://www.facebook.com/Miransafiny",
-      color: "sky" // These will be overridden by the new palette
-    },
-    {
-      icon: MessageSquare,
-      name: "WhatsApp",
-      url: "https://wa.me/9647504459704",
-      color: "emerald" // These will be overridden by the new palette
-    }
+    { icon: Linkedin,      name: 'LinkedIn', url: 'https://www.linkedin.com/in/miran-safiny-48b375229/' },
+    { icon: Instagram,     name: 'Instagram',url: 'https://instagram.com/miran.safiny' },
+    { icon: Facebook,      name: 'Facebook', url: 'https://www.facebook.com/Miransafiny' },
+    { icon: MessageSquare, name: 'WhatsApp', url: 'https://wa.me/9647504459704' }
   ]
 
   return (
-    // Updated section background to match the dark theme
-    <section id="contact" className="py-20 bg-[#100C0D] text-[#E3DCD2]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-16">
-          {/* Updated heading text color */}
-          <h2 className="text-4xl font-bold text-[#E3DCD2] mb-4">Get In Touch</h2>
-          {/* Updated divider color to accent */}
-          <div className="w-24 h-1 bg-[#CC8B65] mx-auto mb-8"></div>
-          {/* Updated paragraph text color */}
-          <p className="text-lg text-[#E3DCD2]/80 max-w-2xl mx-auto">
-            Ready to discuss partnerships, consultations, or media opportunities? 
-            Let's connect and explore how we can work together.
+    <section id="contact" className="relative bg-black text-white py-24">
+      {/* Accent glow */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            'radial-gradient(60rem 30rem at 20% -10%, #040404 60%), radial-gradient(40rem 24rem at 90% 10%, #040404, transparent 60%)'
+        }}
+      />
+
+      <div className="relative max-w-7xl mx-auto px-6">
+        {/* Heading */}
+        <div className="mb-14">
+          <div className="relative inline-block">
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight">GET IN TOUCH</h2>
+            <span
+              className="absolute left-0 -bottom-1 h-[6px] w-0 animate-[wipe_900ms_ease-out_forwards]"
+              style={{ background: ACCENT }}
+            />
+          </div>
+          <p className="mt-6 text-white/80 max-w-2xl">
+            Partnerships, consultations, or media opportunities — let’s connect and build something meaningful.
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-12">
-          {/* Contact Information */}
+        <div className="grid lg:grid-cols-3 gap-8">
+          {/* Info Card */}
           <div className="lg:col-span-1">
-            {/* Updated contact info card background and shadow */}
-            <div className="bg-gradient-to-br from-[#013328] to-[#100C0D] p-8 rounded-2xl shadow-2xl">
-              {/* Updated heading text color */}
-              <h3 className="text-2xl font-bold text-[#E3DCD2] mb-6">Contact Information</h3>
-              
+            <div className="relative rounded-0xl border border-white/10 bg-white/[0.01] p-8 overflow-hidden">
+              <span className="absolute top-0 left-0 h-[2px] w-16" style={{ background: ACCENT }} />
+              <span className="absolute bottom-0 right-0 h-[2px] w-16" style={{ background: ACCENT }} />
+
+              <h3 className="text-2xl font-extrabold tracking-tight mb-6">Contact Information</h3>
+
               <div className="space-y-6 mb-8">
-                {contactInfo.map((info, index) => (
-                  <div key={index} className="flex items-start space-x-4">
-                    {/* Updated icon background and color */}
-                    <div className="bg-[#CC8B65]/20 w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0">
-                      <info.icon className="h-6 w-6 text-[#CC8B65]" />
+                {contactInfo.map((info, i) => (
+                  <div key={i} className="flex items-start gap-4">
+                    <div
+                      className="h-12 w-12 rounded-0xl border border-white/10 bg-white/[0.01] flex items-center justify-center"
+                      style={{ boxShadow: '0 0 0 2px rgba(255,255,255,0.04), inset 0 0 0 1px rgba(255,255,255,0.06)' }}
+                    >
+                      <info.icon className="h-6 w-6" style={{ color: ACCENT }} />
                     </div>
                     <div>
-                      {/* Updated title and value text colors */}
-                      <h4 className="font-semibold text-[#E3DCD2] mb-1">{info.title}</h4>
-                      {info.link === "#" ? (
-                        <p className="text-[#E3DCD2]/80">{info.value}</p>
+                      <div className="font-semibold">{info.title}</div>
+                      {info.link === '#' ? (
+                        <p className="text-white/70">{info.value}</p>
                       ) : (
-                        <a href={info.link} className="text-[#CC8B65] hover:text-[#CC8B65]/80 transition-colors duration-200">
+                        <a
+                          href={info.link}
+                          className="text-white/90 hover:text-white"
+                          style={{ textDecorationColor: ACCENT, textDecorationThickness: 2, textUnderlineOffset: 4 }}
+                        >
                           {info.value}
                         </a>
                       )}
@@ -178,20 +124,21 @@ const Contact: React.FC = () => {
               </div>
 
               <div>
-                {/* Updated social links heading text color */}
-                <h4 className="font-semibold text-[#E3DCD2] mb-4">Follow Miran</h4>
-                <div className="flex space-x-4">
-                  {socialLinks.map((social, index) => (
+                <h4 className="font-semibold mb-4">Follow</h4>
+                <div className="flex gap-3">
+                  {socialLinks.map((s, i) => (
                     <a
-                      key={index}
-                      href={social.url}
-                      // Updated social icon background and hover colors
-                      className="bg-[#CC8B65]/20 hover:bg-[#CC8B65]/30 w-12 h-12 rounded-lg flex items-center justify-center transition-all duration-300 transform hover:scale-110"
+                      key={i}
+                      href={s.url}
                       target="_blank"
                       rel="noopener noreferrer"
+                      className="group relative h-12 w-12  border border-white/10 bg-white/[0.04] flex items-center justify-center transition-transform duration-200 hover:-translate-y-0.5"
                     >
-                      {/* Updated social icon color */}
-                      <social.icon className="h-6 w-6 text-[#CC8B65]" />
+                      <s.icon className="h-6 w-6 text-white/90 group-hover:text-white transition-colors" />
+                      <span
+                        className="absolute inset-0  opacity-0 group-hover:opacity-100 transition-opacity"
+                        style={{ boxShadow: `inset 0 0 0 2px ${ACCENT}` }}
+                      />
                     </a>
                   ))}
                 </div>
@@ -199,103 +146,79 @@ const Contact: React.FC = () => {
             </div>
           </div>
 
-          {/* Contact Form */}
+          {/* Form Card */}
           <div className="lg:col-span-2">
-            {/* Updated form card background, shadow, and border */}
-            <div className="bg-[#013328] p-8 rounded-2xl shadow-2xl border border-[#CC8B65]/30">
-              {/* Updated form heading text color */}
-              <h3 className="text-2xl font-bold text-[#E3DCD2] mb-6">Send a Message</h3>
-              
+            <div className="relative  border border-white/10 bg-white/[0.01] p-8 md:p-10">
+              <span className="absolute top-0 left-0 h-[2px] w-20" style={{ background: ACCENT }} />
+              <span className="absolute bottom-0 right-0 h-[2px] w-20" style={{ background: ACCENT }} />
+
+              <h3 className="text-2xl font-extrabold tracking-tight mb-6">Send a Message</h3>
+
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    {/* Updated label text color */}
-                    <label htmlFor="name" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
-                      Full Name
-                    </label>
+                    <label htmlFor="name" className="block text-sm text-white/70 mb-2">Full Name</label>
                     <input
-                      type="text"
-                      id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleChange}
-                      required
-                      // Updated input field styling for dark theme
-                      className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
+                      id="name" name="name" type="text" required value={formData.name} onChange={handleChange}
+                      className="w-full px-4 py-3  bg-black/40 border border-white/10 text-white placeholder-white/40
+                                 focus:outline-none focus:ring-4 focus:ring-[color:var(--accent)]/20 focus:border-[color:var(--accent)]"
+                      style={{ ['--accent' as any]: ACCENT }}
                       placeholder="Your full name"
                     />
                   </div>
-                  
                   <div>
-                    {/* Updated label text color */}
-                    <label htmlFor="email" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
-                      Email Address
-                    </label>
+                    <label htmlFor="email" className="block text-sm text-white/70 mb-2">Email Address</label>
                     <input
-                      type="email"
-                      id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleChange}
-                      required
-                      // Updated input field styling for dark theme
-                      className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
+                      id="email" name="email" type="email" required value={formData.email} onChange={handleChange}
+                      className="w-full px-4 py-3  bg-black/40 border border-white/10 text-white placeholder-white/40
+                                 focus:outline-none focus:ring-4 focus:ring-[color:var(--accent)]/20 focus:border-[color:var(--accent)]"
+                      style={{ ['--accent' as any]: ACCENT }}
                       placeholder="your.email@example.com"
                     />
                   </div>
                 </div>
 
                 <div>
-                  {/* Updated label text color */}
-                  <label htmlFor="subject" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
-                    Subject
-                  </label>
+                  <label htmlFor="subject" className="block text-sm text-white/70 mb-2">Subject</label>
                   <input
-                    type="text"
-                    id="subject"
-                    name="subject"
-                    value={formData.subject}
-                    onChange={handleChange}
-                    required
-                    // Updated input field styling for dark theme
-                    className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
-                    placeholder="What's this about?"
+                    id="subject" name="subject" type="text" required value={formData.subject} onChange={handleChange}
+                    className="w-full px-4 py-3  bg-black/40 border border-white/10 text-white placeholder-white/40
+                               focus:outline-none focus:ring-4 focus:ring-[color:var(--accent)]/20 focus:border-[color:var(--accent)]"
+                    style={{ ['--accent' as any]: ACCENT }}
+                    placeholder="What’s this about?"
                   />
                 </div>
 
                 <div>
-                  {/* Updated label text color */}
-                  <label htmlFor="message" className="block text-sm font-medium text-[#E3DCD2]/80 mb-2">
-                    Message
-                  </label>
+                  <label htmlFor="message" className="block text-sm text-white/70 mb-2">Message</label>
                   <textarea
-                    id="message"
-                    name="message"
-                    value={formData.message}
-                    onChange={handleChange}
-                    required
-                    rows={6}
-                    // Updated textarea styling for dark theme
-                    className="w-full px-4 py-3 border border-[#CC8B65]/30 rounded-lg focus:ring-2 focus:ring-[#CC8B65] focus:border-[#CC8B65] transition-colors duration-200 resize-vertical bg-[#100C0D] text-[#E3DCD2] shadow-sm placeholder-[#E3DCD2]/50"
-                    placeholder="Tell Miran about your project, partnership idea, or inquiry..."
+                    id="message" name="message" rows={6} required value={formData.message} onChange={handleChange}
+                    className="w-full px-4 py-3  bg-black/40 border border-white/10 text-white placeholder-white/40 resize-vertical
+                               focus:outline-none focus:ring-4 focus:ring-[color:var(--accent)]/20 focus:border-[color:var(--accent)]"
+                    style={{ ['--accent' as any]: ACCENT }}
+                    placeholder="Tell Miran about your project, partnership idea, or inquiry…"
                   />
                 </div>
 
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  // Updated button gradient and text colors for dark theme
-                  className="w-full bg-gradient-to-r from-[#CC8B65] to-[#CC8B65]/80 hover:from-[#CC8B65]/80 hover:to-[#CC8B65] disabled:from-[#CC8B65]/50 disabled:to-[#CC8B65]/60 text-[#100C0D] font-semibold py-4 px-6 rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg flex items-center justify-center"
+                  className="w-full  font-semibold py-4 px-6 flex items-center justify-center gap-2
+                             text-black transition-transform duration-300 hover:scale-[1.01] disabled:opacity-60"
+                  style={{
+                    backgroundImage: `linear-gradient(90deg, ${ACCENT}, #35d7ff)`,
+                    boxShadow: '0 10px 30px #040404'
+                  }}
                 >
                   {isSubmitting ? (
                     <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-[#100C0D] mr-2"></div>
-                      Sending...
+                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black/70" />
+                      Sending…
                     </>
                   ) : (
                     <>
                       Send Message
-                      <Send className="ml-2 h-5 w-5" />
+                      <Send className="h-5 w-5" />
                     </>
                   )}
                 </button>
@@ -304,6 +227,32 @@ const Contact: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Toast (site style) */}
+      <div
+        role="status"
+        aria-live="polite"
+        className="pointer-events-none fixed inset-0 flex items-start justify-center pt-6 md:pt-10"
+      >
+        {toast && (
+          <div
+            className="pointer-events-auto px-5 py-4 rounded-0xl border shadow-2xl"
+            style={{
+              background: toast.type === 'ok' ? 'rgba(0,191,238,0.1)' : 'rgba(255,60,60,0.08)',
+              borderColor: toast.type === 'ok' ? 'rgba(0,191,238,0.35)' : 'rgba(255,60,60,0.35)',
+              color: toast.type === 'ok' ? '#eafaff' : '#ffecec',
+              backdropFilter: 'blur(8px)'
+            }}
+          >
+            {toast.text}
+          </div>
+        )}
+      </div>
+
+      {/* Local styles */}
+      <style>{`
+        @keyframes wipe { from { width: 0 } to { width: 100% } }
+      `}</style>
     </section>
   )
 }

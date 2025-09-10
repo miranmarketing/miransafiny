@@ -5,16 +5,19 @@ import GA4 from 'react-ga4'; // Import react-ga4
 // Import your components
 import AdminDashboard from './components/admin/AdminDashboard';
 import Hero from './components/Hero';
+import QuoteSection from './components/QuoteSection';
+import RecentArticlesStrip from './components/RecentArticlesStrip';
 import About from './components/About';
-import Vision from './components/Vision';
-import Biography from './components/Biography';
+// import Vision from './components/Vision';
+// import Biography from './components/Biography';
 import Achievements from './components/Achievements';
-import Philosophy from './components/Philosophy';
-import Community from './components/Community';
+// import Philosophy from './components/Philosophy';
+// import Community from './components/Community';
 import Articles from './components/Articles';
 import Contact from './components/Contact';
 import Layout from './components/Layout';
 import ArticleDetail from './components/ArticleDetail';
+import Story from './components/Story';
 
 // --- Google Analytics Setup ---
 // Replace with your actual Google Analytics 4 Measurement ID (starts with 'G-')
@@ -59,13 +62,11 @@ function App() {
           element={
             <Layout>
               <Hero />
+              <QuoteSection />
               <Articles /> {/* Articles also on the homepage */}
               <About />
-              <Vision />
-              <Biography />
+              <Story />
               <Achievements />
-              <Philosophy />
-              <Community />
               <Contact />
             </Layout>
           }

@@ -1,0 +1,19 @@
+# netlify.toml
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+# Optional (for classic Netlify Functions):
+[functions]
+  node_bundler = "esbuild"
+
+# Attach the Edge Function named "seo" to /articles/*
+[[edge_functions]]
+  function = "seo"
+  path = "/articles/*"
+
+# SPA fallback: send all other routes to index.html
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

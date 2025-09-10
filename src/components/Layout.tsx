@@ -1,7 +1,7 @@
 // components/Layout.tsx
 import React, { useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
-import Header from './Header'
+import Sidebar from './Sidebar'
 import Footer from './Footer'
 
 const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
@@ -20,9 +20,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   }, [location])
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <Header />
-      <main className="flex-grow bg-[#100C0D]">{children}</main>
+    <div className="min-h-screen bg-black text-white overflow-x-hidden">
+      <Sidebar />
+      <main className="pl-0 md:pl-64 bg-black">{children}</main>   {/* <-- bg-black */}
       <Footer />
     </div>
   )

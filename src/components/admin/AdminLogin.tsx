@@ -26,7 +26,7 @@ const AdminLogin: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-blue-800 to-emerald-800 flex items-center justify-center p-4">
+    <div className="min-h-screen   bg-gradient-to-r from-slate-800 to-slate-900 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -34,7 +34,7 @@ const AdminLogin: React.FC = () => {
         className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-black-800 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
             <Lock className="h-8 w-8 text-blue-600" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Admin Dashboard</h1>
