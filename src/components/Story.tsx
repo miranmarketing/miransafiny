@@ -13,7 +13,7 @@ type TimelineItem = {
 }
 
 const timeline: TimelineItem[] = [
-  { year: '1992', title: 'Getting Started', text: 'At a young age, Miran starts helping in family business.', img: '/1992.jpg', alt: 'Young Miran' },
+  { year: '2004', title: 'Getting Started', text: 'At a young age, Miran starts helping in family business.', img: '/1992.jpg', alt: 'Young Miran' },
   { year: '2014', title: 'Early Marketing', text: 'Started working in a Real Estate Firm and gained trust of more than thousands of clients.', img: '/2014.jpg', alt: 'Marketing in Erbil' },
   { year: '2021', title: 'Scaling Ventures', text: 'Founded  Miran Real Estate with the vision of revolutionizing the industry', img: '/2021.jpeg', alt: 'Scaling ventures' },
   { year: '2024', title: 'Founding Push', text: 'Expanded across marketing and real estate with key partnerships.', img: '/2024.JPG', alt: 'Founding ventures' }
