@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://miransafiny.com/sitemap.xml
+
+# Disallow admin pages
+User-agent: *
+Disallow: /admin/
