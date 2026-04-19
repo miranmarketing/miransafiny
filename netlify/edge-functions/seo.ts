@@ -3,11 +3,8 @@ import type { Context } from "https://edge.netlify.com";
 export default async (request: Request, context: Context) => {
   const url = new URL(request.url);
   
-  // 1. Extract locale and slug from the URL
-  // Example: /ckb/articles/karigari-abori-romali...
   const match = url.pathname.match(/^\/(en|ar|ckb)\/articles\/([^\/]+)\/?$/);
   
-  // If it's not a valid article URL, just serve the normal index.html
   if (!match) {
     return context.next();
   }
@@ -15,19 +12,16 @@ export default async (request: Request, context: Context) => {
   const locale = match[1];
   const slug = match[2];
 
-  // 2. Fetch the raw index.html response
   const response = await context.next();
   let html = await response.text();
 
-  // 3. Fetch the article data from Supabase
-  // Note: Netlify Edge Functions use Deno, so we use standard fetch and Netlify.env
   const supabaseUrl = Netlify.env.get("VITE_SUPABASE_DATABASE_URL") || Netlify.env.get("VITE_SUPABASE_URL");
   const supabaseKey = Netlify.env.get("VITE_SUPABASE_ANON_KEY");
 
   if (supabaseUrl && supabaseKey) {
     try {
-      // Use the Supabase REST API directly for speed on the Edge
-      const apiUrl = `${supabaseUrl}/rest/v1/articles?slug=eq.${slug}&locale=eq.${locale}&select=title,excerpt,image_url`;
+      // 1. Added 'content' and 'video_url' to the select query just in case you use either
+      const apiUrl = `${supabaseUrl}/rest/v1/articles?slug=eq.${slug}&locale=eq.${locale}&select=title,excerpt,image_url,content,video_url`;
       
       const supaRes = await fetch(apiUrl, {
         headers: {
@@ -42,29 +36,45 @@ export default async (request: Request, context: Context) => {
       if (article) {
         const title = article.title;
         const description = article.excerpt || title;
-        // Fallback to default image if article has no image
-        const image = article.image_url || 'https://miransafiny.com/miran.png';
+        
+        // 2. Logic to determine the best image
+        let image = article.image_url;
 
-        // 4. Inject the dynamic tags into the HTML string
-        // Replace Title
+        // If no explicit image_url exists, check for a YouTube video
+        if (!image) {
+          // Combine video_url and content into one string to search for a YouTube link
+          const textToSearch = `${article.video_url || ''} ${article.content || ''}`;
+          
+          // Regex to extract the 11-character YouTube Video ID
+          const ytMatch = textToSearch.match(/(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/i);
+          
+          if (ytMatch && ytMatch[1]) {
+            const ytId = ytMatch[1];
+            // Use YouTube's automatically generated high-res thumbnail
+            image = `https://img.youtube.com/vi/${ytId}/maxresdefault.jpg`;
+          }
+        }
+
+        // 3. Fallback to default branding if no image or video is found
+        if (!image) {
+          image = 'https://miransafiny.com/miran.png';
+        }
+
         html = html.replace(
           /<title>.*?<\/title>/i, 
           `<title>${title} | Miran Safiny</title>`
         );
         
-        // Replace Description
         html = html.replace(
           /<meta\s+name="description"\s+content="[^"]*"/i, 
           `<meta name="description" content="${description.replace(/"/g, '&quot;')}"`
         );
         
-        // Replace OG Image
         html = html.replace(
           /<meta\s+property="og:image"\s+content="[^"]*"/i, 
           `<meta property="og:image" content="${image}"`
         );
 
-        // Add OG Title and Description (if missing) right before </head>
         const ogTags = `
           <meta property="og:title" content="${title.replace(/"/g, '&quot;')}" />
           <meta property="og:description" content="${description.replace(/"/g, '&quot;')}" />
@@ -79,7 +89,6 @@ export default async (request: Request, context: Context) => {
     }
   }
 
-  // 5. Return the modified HTML to the crawler/browser
   return new Response(html, {
     headers: { "content-type": "text/html;charset=UTF-8" },
   });
