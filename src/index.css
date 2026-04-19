@@ -1,3 +1,33 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Define Rabar Fonts */
+@font-face {
+  font-family: 'Rabar';
+  src: url('/fonts/RABAR_1D.TTF') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rabar';
+  src: url('/fonts/RABAR_1B.TTF') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Rabar';
+  src: url('/fonts/RABAR_1E.TTF') format('truetype');
+  font-weight: 300; /* Light */
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Automatically apply the font and fix standard text alignments for RTL */
+[dir="rtl"] {
+  font-family: 'Rabar', sans-serif;
+}

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { supabase, Article } from '../lib/supabase'
 import { DEFAULT_LANG, isAppLang } from '../utils/locale'
 
-const HEADER_H = 56 // matches h-14
+const HEADER_H = 56 
 
 const Hero: React.FC = () => {
   const { t } = useTranslation()
@@ -89,7 +89,8 @@ const Hero: React.FC = () => {
         style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 56px)' }}
       >
         <div className="mx-auto max-w-4xl text-center">
-          <h2 className="mb-2 font-black tracking-widest text-white text-[clamp(0.95rem,3.4vw,1.25rem)]">
+          {/* CHANGED: tracking-widest -> ltr:tracking-widest rtl:tracking-normal */}
+          <h2 className="mb-2 font-black ltr:tracking-widest rtl:tracking-normal text-white text-[clamp(0.95rem,3.4vw,1.25rem)]">
             {t('hero.name')}
           </h2>
           <p
@@ -104,38 +105,42 @@ const Hero: React.FC = () => {
           </p>
 
           {latest && (
-            <div className="mt-6 sm:mt-8 mx-auto max-w-lg text-left border border-white/20 bg-black/40 backdrop-blur-sm p-4 sm:p-5">
-              <p className="text-[10px] sm:text-xs font-bold tracking-[0.2em] text-[#007BFF] mb-2">
+            <div className="mt-6 sm:mt-8 mx-auto max-w-lg text-start border border-white/20 bg-black/40 backdrop-blur-sm p-4 sm:p-5">
+              {/* CHANGED: tracking-[0.2em] -> ltr:tracking-[0.2em] rtl:tracking-normal */}
+              <p className="text-[10px] sm:text-xs font-bold ltr:tracking-[0.2em] rtl:tracking-normal text-[#007BFF] mb-2">
                 {t('hero.latestArticle')}
               </p>
               <p className="font-bold text-sm sm:text-base text-white line-clamp-2">{latest.title}</p>
               {latest.excerpt && (
                 <p className="mt-2 text-xs sm:text-sm text-white/75 line-clamp-2">{latest.excerpt}</p>
               )}
+              {/* CHANGED: tracking-wider -> ltr:tracking-wider rtl:tracking-normal */}
               <button
                 type="button"
                 onClick={openLatest}
-                className="mt-4 inline-flex items-center text-xs sm:text-sm font-bold uppercase tracking-wider text-[#007BFF] hover:underline"
+                className="mt-4 inline-flex items-center text-xs sm:text-sm font-bold uppercase ltr:tracking-wider rtl:tracking-normal text-[#007BFF] hover:underline"
               >
                 {t('hero.readArticle')}
-                <ArrowRight className="ml-2 h-4 w-4" />
+                <ArrowRight className="ms-2 h-4 w-4 rtl:-scale-x-100" />
               </button>
             </div>
           )}
 
           <div className="mt-5 sm:mt-6 flex justify-center">
+            {/* CHANGED: tracking-wider -> ltr:tracking-wider rtl:tracking-normal */}
             <button
               onClick={scrollToContact}
-              className="inline-flex items-center px-8 py-3 font-bold uppercase tracking-wider bg-[#007BFF] text-white"
+              className="inline-flex items-center px-8 py-3 font-bold uppercase ltr:tracking-wider rtl:tracking-normal bg-[#007BFF] text-white"
             >
               {t('hero.cta')}
-              <ArrowRight className="ml-2 h-5 w-5" />
+              <ArrowRight className="ms-2 h-5 w-5 rtl:-scale-x-100" />
             </button>
           </div>
         </div>
       </div>
 
-      <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 text-xs tracking-widest sm:bottom-4">
+      {/* CHANGED: tracking-widest -> ltr:tracking-widest rtl:tracking-normal */}
+      <div className="pointer-events-none absolute bottom-3 left-1/2 z-10 -translate-x-1/2 text-xs ltr:tracking-widest rtl:tracking-normal sm:bottom-4">
         {t('hero.scroll')}
       </div>
 

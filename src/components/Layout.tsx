@@ -28,7 +28,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       if (element) {
         setTimeout(() => {
           element.scrollIntoView({ behavior: 'smooth' })
-        }, 100) // Small delay to ensure DOM ready
+        }, 100)
       }
     }
   }, [location])
@@ -37,7 +37,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     <div className="min-h-screen bg-black text-white overflow-x-hidden">
       <SiteSeo />
       <Sidebar />
-      <main className="pl-0 md:pl-64 bg-black">{children}</main>   {/* <-- bg-black */}
+      {/* CHANGED: pl-0 md:pl-64 is now ps-0 md:ps-64 */}
+      <main className="ps-0 md:ps-64 bg-black">{children}</main>   
       <Footer />
     </div>
   )

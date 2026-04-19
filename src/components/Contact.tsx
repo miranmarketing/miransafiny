@@ -80,8 +80,9 @@ const Contact: React.FC = () => {
         <div className="mb-14">
           <div className="relative inline-block">
             <h2 className="text-4xl md:text-5xl font-black tracking-tight">{t('contact.heading')}</h2>
+            {/* CHANGED: left-0 -> start-0 */}
             <span
-              className="absolute left-0 -bottom-1 h-[6px] w-0 animate-[wipe_900ms_ease-out_forwards]"
+              className="absolute start-0 -bottom-1 h-[6px] w-0 animate-[wipe_900ms_ease-out_forwards]"
               style={{ background: ACCENT }}
             />
           </div>
@@ -91,54 +92,42 @@ const Contact: React.FC = () => {
         <div className="grid lg:grid-cols-3 gap-8">
           <div className="lg:col-span-1">
             <div className="relative rounded-0xl border border-white/10 bg-white/[0.01] p-8 overflow-hidden">
-              <span className="absolute top-0 left-0 h-[2px] w-16" style={{ background: ACCENT }} />
-              <span className="absolute bottom-0 right-0 h-[2px] w-16" style={{ background: ACCENT }} />
-
-              <h3 className="text-2xl font-extrabold tracking-tight mb-6">{t('contact.infoTitle')}</h3>
-
-              <div className="space-y-6 mb-8">
-                {contactInfo.map((info, i) => (
-                  <div key={i} className="flex items-start gap-4">
-                    <div
-                      className="h-12 w-12 rounded-0xl border border-white/10 bg-white/[0.01] flex items-center justify-center"
-                      style={{ boxShadow: '0 0 0 2px rgba(255,255,255,0.04), inset 0 0 0 1px rgba(255,255,255,0.06)' }}
-                    >
-                      <info.icon className="h-6 w-6" style={{ color: ACCENT }} />
-                    </div>
-                    <div>
-                      <div className="font-semibold">{t(info.titleKey)}</div>
-                      {info.link === '#' ? (
-                        <p className="text-white/70">{'valueKey' in info ? t(info.valueKey) : info.value}</p>
-                      ) : (
-                        <a
-                          href={info.link}
-                          className="text-white/90 hover:text-white"
-                          style={{ textDecorationColor: ACCENT, textDecorationThickness: 2, textUnderlineOffset: 4 }}
-                        >
-                          {info.value}
+              {/* CHANGED: left-0 -> start-0 */}
+              <span className="absolute top-0 start-0 h-[2px] w-[12%]" style={{ backgroundColor: ACCENT }} />
+              
+              <h3 className="text-xl font-bold mb-8 uppercase tracking-wider">{t('contact.infoTitle')}</h3>
+              <div className="space-y-8">
+                {contactInfo.map((item, i) => (
+                  <div key={i} className="flex items-start">
+                    <item.icon className="w-5 h-5 mt-1 text-[#007BFF]" />
+                    {/* CHANGED: ml-4 -> ms-4 */}
+                    <div className="ms-4">
+                      <p className="text-sm text-gray-500 uppercase tracking-wider mb-1">{t(item.titleKey)}</p>
+                      {item.link !== '#' ? (
+                        <a href={item.link} className="text-white/90 hover:text-white transition-colors">
+                          {item.valueKey ? t(item.valueKey) : item.value}
                         </a>
+                      ) : (
+                        <p className="text-white/90">{item.valueKey ? t(item.valueKey) : item.value}</p>
                       )}
                     </div>
                   </div>
                 ))}
               </div>
 
-              <div>
-                <h4 className="font-semibold mb-4">{t('contact.follow')}</h4>
-                <div className="flex gap-3">
-                  {socialLinks.map((s, i) => (
+              <div className="mt-12 pt-8 border-t border-white/10">
+                <p className="text-sm text-gray-500 uppercase tracking-wider mb-4">{t('contact.follow')}</p>
+                <div className="flex gap-4">
+                  {socialLinks.map((social) => (
                     <a
-                      key={i}
-                      href={s.url}
+                      key={social.name}
+                      href={social.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="group relative h-12 w-12  border border-white/10 bg-white/[0.04] flex items-center justify-center transition-transform duration-200 hover:-translate-y-0.5"
+                      className="p-3 bg-white/5 hover:bg-[#007BFF] transition-colors rounded-none text-white"
+                      title={social.name}
                     >
-                      <s.icon className="h-6 w-6 text-white/90 group-hover:text-white transition-colors" />
-                      <span
-                        className="absolute inset-0  opacity-0 group-hover:opacity-100 transition-opacity"
-                        style={{ boxShadow: `inset 0 0 0 2px ${ACCENT}` }}
-                      />
+                      <social.icon className="w-5 h-5" />
                     </a>
                   ))}
                 </div>
@@ -147,107 +136,72 @@ const Contact: React.FC = () => {
           </div>
 
           <div className="lg:col-span-2">
-            <div className="relative  border border-white/10 bg-white/[0.01] p-8 md:p-10">
-              <span className="absolute top-0 left-0 h-[2px] w-20" style={{ background: ACCENT }} />
-              <span className="absolute bottom-0 right-0 h-[2px] w-20" style={{ background: ACCENT }} />
-
-              <h3 className="text-2xl font-extrabold tracking-tight mb-6">{t('contact.formTitle')}</h3>
+            <div className="relative rounded-0xl border border-white/10 bg-white/[0.01] p-8">
+              {/* CHANGED: left-0 -> start-0 */}
+              <span className="absolute top-0 start-0 h-[2px] w-[12%]" style={{ backgroundColor: ACCENT }} />
+              <h3 className="text-xl font-bold mb-8 uppercase tracking-wider">{t('contact.formTitle')}</h3>
 
               <form onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid md:grid-cols-2 gap-6">
                   <div>
-                    <label htmlFor="name" className="block text-sm text-white/70 mb-2">
-                      {t('contact.fullName')}
-                    </label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('contact.fullName')}</label>
                     <input
-                      id="name"
-                      name="name"
-                      type="text"
                       required
+                      name="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className="w-full px-4 py-3  bg-black/40 border border-white/10 text-white placeholder-white/40
-                                 focus:outline-none focus:ring-4 focus:ring-[color:var(--accent)]/20 focus:border-[color:var(--accent)]"
-                      style={accentFieldStyle}
                       placeholder={t('contact.namePh')}
+                      className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#007BFF] transition-colors"
+                      style={accentFieldStyle}
                     />
                   </div>
                   <div>
-                    <label htmlFor="email" className="block text-sm text-white/70 mb-2">
-                      {t('contact.emailLabel')}
-                    </label>
+                    <label className="block text-sm text-gray-400 mb-2">{t('contact.emailLabel')}</label>
                     <input
-                      id="email"
-                      name="email"
-                      type="email"
                       required
+                      type="email"
+                      name="email"
                       value={formData.email}
                       onChange={handleChange}
-                      className="w-full px-4 py-3  bg-black/40 border border-white/10 text-white placeholder-white/40
-                                 focus:outline-none focus:ring-4 focus:ring-[color:var(--accent)]/20 focus:border-[color:var(--accent)]"
-                      style={accentFieldStyle}
                       placeholder={t('contact.emailPh')}
+                      className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#007BFF] transition-colors"
+                      style={accentFieldStyle}
                     />
                   </div>
                 </div>
-
                 <div>
-                  <label htmlFor="subject" className="block text-sm text-white/70 mb-2">
-                    {t('contact.subject')}
-                  </label>
+                  <label className="block text-sm text-gray-400 mb-2">{t('contact.subject')}</label>
                   <input
-                    id="subject"
-                    name="subject"
-                    type="text"
                     required
+                    name="subject"
                     value={formData.subject}
                     onChange={handleChange}
-                    className="w-full px-4 py-3  bg-black/40 border border-white/10 text-white placeholder-white/40
-                               focus:outline-none focus:ring-4 focus:ring-[color:var(--accent)]/20 focus:border-[color:var(--accent)]"
-                    style={accentFieldStyle}
                     placeholder={t('contact.subjectPh')}
+                    className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#007BFF] transition-colors"
+                    style={accentFieldStyle}
                   />
                 </div>
-
                 <div>
-                  <label htmlFor="message" className="block text-sm text-white/70 mb-2">
-                    {t('contact.message')}
-                  </label>
+                  <label className="block text-sm text-gray-400 mb-2">{t('contact.message')}</label>
                   <textarea
-                    id="message"
-                    name="message"
-                    rows={6}
                     required
+                    name="message"
                     value={formData.message}
                     onChange={handleChange}
-                    className="w-full px-4 py-3  bg-black/40 border border-white/10 text-white placeholder-white/40 resize-vertical
-                               focus:outline-none focus:ring-4 focus:ring-[color:var(--accent)]/20 focus:border-[color:var(--accent)]"
-                    style={accentFieldStyle}
                     placeholder={t('contact.messagePh')}
+                    rows={4}
+                    className="w-full bg-white/5 border border-white/10 px-4 py-3 text-white placeholder-white/30 focus:outline-none focus:border-[#007BFF] transition-colors resize-none"
+                    style={accentFieldStyle}
                   />
                 </div>
-
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full  font-semibold py-4 px-6 flex items-center justify-center gap-2
-                             text-black transition-transform duration-300 hover:scale-[1.01] disabled:opacity-60"
-                  style={{
-                    backgroundImage: `linear-gradient(90deg, ${ACCENT}, #35d7ff)`,
-                    boxShadow: '0 10px 30px #040404',
-                  }}
+                  className="group flex items-center justify-center w-full sm:w-auto bg-[#007BFF] text-white px-8 py-3 font-bold uppercase tracking-wider hover:bg-[#0056b3] transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                 >
-                  {isSubmitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-black/70" />
-                      {t('contact.sending')}
-                    </>
-                  ) : (
-                    <>
-                      {t('contact.send')}
-                      <Send className="h-5 w-5" />
-                    </>
-                  )}
+                  {isSubmitting ? t('contact.sending') : t('contact.send')}
+                  {/* CHANGED: ml-2 -> ms-2 */}
+                  <Send className="w-4 h-4 ms-2 group-hover:translate-x-1 transition-transform" />
                 </button>
               </form>
             </div>
@@ -255,29 +209,17 @@ const Contact: React.FC = () => {
         </div>
       </div>
 
-      <div
-        role="status"
-        aria-live="polite"
-        className="pointer-events-none fixed inset-0 flex items-start justify-center pt-6 md:pt-10"
-      >
-        {toast && (
+      {toast && (
+        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 animate-fade-in-up">
           <div
-            className="pointer-events-auto px-5 py-4 rounded-0xl border shadow-2xl"
-            style={{
-              background: toast.type === 'ok' ? 'rgba(0,191,238,0.1)' : 'rgba(255,60,60,0.08)',
-              borderColor: toast.type === 'ok' ? 'rgba(0,191,238,0.35)' : 'rgba(255,60,60,0.35)',
-              color: toast.type === 'ok' ? '#eafaff' : '#ffecec',
-              backdropFilter: 'blur(8px)',
-            }}
+            className={`px-6 py-3 font-bold tracking-wide uppercase text-sm border ${
+              toast.type === 'ok' ? 'bg-green-500/10 border-green-500/50 text-green-400' : 'bg-red-500/10 border-red-500/50 text-red-400'
+            }`}
           >
             {toast.text}
           </div>
-        )}
-      </div>
-
-      <style>{`
-        @keyframes wipe { from { width: 0 } to { width: 100% } }
-      `}</style>
+        </div>
+      )}
     </section>
   )
 }

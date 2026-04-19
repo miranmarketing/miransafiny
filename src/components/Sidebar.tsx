@@ -67,7 +67,6 @@ const Sidebar: React.FC = () => {
 
     targets.forEach(s => io.observe(s))
     return () => io.disconnect()
-    // do not include `active` to avoid re-initializing IO
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname, navItems, isHome])
 
@@ -113,7 +112,7 @@ const Sidebar: React.FC = () => {
         <input id="search-input" type="text"
           class="w-full bg-transparent text-white border-b-2 border-white px-0 py-3 text-4xl placeholder-white/50 focus:outline-none"
           placeholder="${t('search.placeholder')}" />
-        <button class="absolute top-1/2 right-0 -translate-y-1/2 text-white/70 hover:text-white"
+        <button class="absolute top-1/2 end-0 -translate-y-1/2 text-white/70 hover:text-white"
           onclick="document.getElementById('search-overlay').remove()">✕</button>
       </div>
       <p class="text-white/50 text-xs mt-4">${t('search.hint')}</p>
@@ -138,7 +137,7 @@ const Sidebar: React.FC = () => {
   return (
     <>
       {/* ===== Desktop Sidebar (md+) ===== */}
-      <aside className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-black text-white flex-col z-50">
+      <aside className="hidden md:flex fixed top-0 start-0 h-screen w-64 bg-black text-white flex-col z-50">
         {/* Brand SVG */}
         <div className="w-11/12 mx-auto mt-8 mb-2">
           <img
@@ -159,7 +158,7 @@ const Sidebar: React.FC = () => {
               <div key={item.labelKey} className="group relative w-full overflow-hidden">
                 <span
                   className={[
-                    'absolute inset-0 transform origin-left transition-transform duration-300',
+                    'absolute inset-0 transform ltr:origin-left rtl:origin-right transition-transform duration-300',
                     isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                   ].join(' ')}
                   style={{ backgroundColor: ACCENT }}
@@ -168,7 +167,7 @@ const Sidebar: React.FC = () => {
                   onClick={() => scrollTo(item.href)}
                   aria-current={isActive ? 'page' : undefined}
                   className={[
-                    'relative z-10 block w-full text-left py-2 px-3',
+                    'relative z-10 block w-full text-start py-2 px-3',
                     'text-[15px] font-bold tracking-[0.18em]',
                     'text-white'
                   ].join(' ')}
@@ -184,28 +183,28 @@ const Sidebar: React.FC = () => {
         <div className="px-5 pb-6 border-t border-white/10 pt-4 space-y-3">
           <LanguageSwitcher />
           <div className="flex items-center gap-3">
-          <button onClick={handleSearchClick} className="hover:opacity-80" aria-label={t('search.open')}>
-            <Search className="w-5 h-5" />
-          </button>
-          <a className="hover:opacity-80" href="https://www.linkedin.com/in/miran-safiny-48b375229/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
-            <Linkedin className="w-5 h-5" />
-          </a>
-          <a className="hover:opacity-80" href="https://instagram.com/miransafiny" target="_blank" rel="noreferrer" aria-label="Instagram">
-            <Instagram className="w-5 h-5" />
-          </a>
-          <a className="hover:opacity-80" href="https://miransafiny.com" target="_blank" rel="noreferrer" aria-label="Website">
-            <Globe className="w-5 h-5" />
-          </a>
+            <button onClick={handleSearchClick} className="hover:opacity-80" aria-label={t('search.open')}>
+              <Search className="w-5 h-5" />
+            </button>
+            <a className="hover:opacity-80" href="https://www.linkedin.com/in/miran-safiny-48b375229/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
+              <Linkedin className="w-5 h-5" />
+            </a>
+            <a className="hover:opacity-80" href="https://instagram.com/miransafiny" target="_blank" rel="noreferrer" aria-label="Instagram">
+              <Instagram className="w-5 h-5" />
+            </a>
+            <a className="hover:opacity-80" href="https://miransafiny.com" target="_blank" rel="noreferrer" aria-label="Website">
+              <Globe className="w-5 h-5" />
+            </a>
           </div>
         </div>
       </aside>
 
       {/* ===== Mobile Top Bar (<md) ===== */}
-      <header className="md:hidden fixed top-0 left-0 right-0 h-14 bg-black/95 backdrop-blur z-50 border-b border-white/10 flex items-center justify-between px-4">
+      <header className="md:hidden fixed top-0 inset-x-0 h-14 bg-black/95 backdrop-blur z-50 border-b border-white/10 flex items-center justify-between px-4">
         <img
           src="/safiny.svg"
           alt="Miran Safiny"
-          className="h-7 w-100vw select-none"
+          className="h-7 w-auto select-none"
           loading="eager"
           decoding="async"
           draggable="false"
@@ -233,7 +232,7 @@ const Sidebar: React.FC = () => {
       <div
         className={[
           'md:hidden fixed inset-0 z-[60] bg-black transition-transform duration-300',
-          mobileOpen ? 'translate-x-0' : 'translate-x-full'
+          mobileOpen ? 'translate-x-0' : 'ltr:translate-x-full rtl:-translate-x-full'
         ].join(' ')}
         role="dialog"
         aria-modal="true"
@@ -258,7 +257,7 @@ const Sidebar: React.FC = () => {
               <div key={item.labelKey} className="group relative w-full overflow-hidden">
                 <span
                   className={[
-                    'absolute inset-0 transform origin-left transition-transform duration-300',
+                    'absolute inset-0 transform ltr:origin-left rtl:origin-right transition-transform duration-300',
                     isActive ? 'scale-x-100' : 'scale-x-0 group-hover:scale-x-100'
                   ].join(' ')}
                   style={{ backgroundColor: ACCENT }}
@@ -266,7 +265,7 @@ const Sidebar: React.FC = () => {
                 <button
                   onClick={() => scrollTo(item.href)}
                   aria-current={isActive ? 'page' : undefined}
-                  className="relative z-10 w-full text-left py-3 px-3 text-[17px] font-extrabold tracking-[0.18em] text-white"
+                  className="relative z-10 w-full text-start py-3 px-3 text-[17px] font-extrabold tracking-[0.18em] text-white"
                 >
                   {t(item.labelKey)}
                 </button>
