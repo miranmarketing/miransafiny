@@ -1,0 +1,190 @@
+{
+  "nav": {
+    "home": "HOME",
+    "articles": "ARTICLES",
+    "about": "ABOUT",
+    "story": "MY STORY",
+    "achievements": "ACHIEVEMENTS",
+    "contact": "CONTACT"
+  },
+  "lang": {
+    "en": "English",
+    "ar": "العربية",
+    "ckb": "کوردی"
+  },
+  "seo": {
+    "defaultTitle": "Miran Safiny | Entrepreneur, Marketing & Real Estate — Kurdistan",
+    "defaultDescription": "Miran Safiny — vision-driven entrepreneur, marketing strategist, and real estate leader based in Erbil, Kurdistan. Insights on business, property, and sustainable growth.",
+    "homeTitle": "Miran Safiny | Vision-Driven Entrepreneur, Marketing Strategist & Real Estate Leader",
+    "homeDescription": "Official site of Miran Safiny — entrepreneur and business leader in Erbil, Kurdistan. Real estate, marketing strategy, renewable energy, and sustainable ventures.",
+    "articlesTitle": "Articles | Miran Safiny",
+    "articlesDescription": "Articles on real estate, marketing, Kurdistan business, and entrepreneurship by Miran Safiny."
+  },
+  "hero": {
+    "name": "MIRAN SAFINY",
+    "tagline": "VISION-DRIVEN ENTREPRENEUR, MARKETING STRATEGIST, & REAL ESTATE LEADER",
+    "cta": "Get In Touch",
+    "latestArticle": "Latest article",
+    "readArticle": "Read article",
+    "scroll": "SCROLL",
+    "heroImageAlt": "Miran Safiny — entrepreneur and business leader in Kurdistan"
+  },
+  "quote": {
+    "text": "\"TO BUILD AND SUPPORT VENTURES THAT SOLVE REAL-WORLD PROBLEMS.\"",
+    "attribution": "MIRAN SAFINY"
+  },
+  "about": {
+    "heading": "ABOUT MIRAN",
+    "p1": "Miran Safiny is a visionary entrepreneur and business leader based in Erbil, Kurdistan Region, Iraq. With a sharp eye for emerging trends and a reputation for execution, Miran has built and managed multiple successful ventures across real estate, marketing, and renewable energy sectors.",
+    "p2": "Driven by a belief in sustainable development, customer trust, and regional transformation, Miran continues to pioneer initiatives that bring global business standards to local markets. Whether leading creative campaigns or launching infrastructure projects, his work is always rooted in value creation and long-term impact.",
+    "badge1": "Entrepreneur",
+    "badge2": "Marketing Strategist",
+    "badge3": "Real Estate Leader",
+    "badge4": "Green Tech Advocate",
+    "highlights": [
+      {
+        "title": "Visionary Leadership",
+        "description": "Sharp eye for emerging trends and reputation for execution"
+      },
+      {
+        "title": "Innovation Focus",
+        "description": "Pioneering initiatives with global standards for local markets"
+      },
+      {
+        "title": "Value Creation",
+        "description": "Always rooted in customer trust and long-term impact"
+      },
+      {
+        "title": "Multi-Sector Experience",
+        "description": "Successful ventures across real estate, marketing, and renewable energy"
+      }
+    ],
+    "portraitAlt": "Miran Safiny portrait"
+  },
+  "story": {
+    "heading": "MY STORY",
+    "timeline": [
+      {
+        "year": "2004",
+        "title": "Getting Started",
+        "text": "At a young age, Miran starts helping in family business.",
+        "img": "/1992.jpg",
+        "imgAlt": "Young Miran"
+      },
+      {
+        "year": "2014",
+        "title": "Early Marketing",
+        "text": "Started working in a Real Estate Firm and gained trust of more than thousands of clients.",
+        "img": "/2014.jpg",
+        "imgAlt": "Marketing in Erbil"
+      },
+      {
+        "year": "2021",
+        "title": "Scaling Ventures",
+        "text": "Founded Miran Real Estate with the vision of revolutionizing the industry",
+        "img": "/2021.jpeg",
+        "imgAlt": "Scaling ventures"
+      },
+      {
+        "year": "2024",
+        "title": "Founding Push",
+        "text": "Expanded across marketing and real estate with key partnerships.",
+        "img": "/2024.JPG",
+        "imgAlt": "Founding ventures"
+      }
+    ]
+  },
+  "achievements": {
+    "heading": "KEY ACCOMPLISHMENTS",
+    "items": [
+      {
+        "title": "Launched Zillion Max",
+        "description": "Offering business consultancy and developing Kurdistan's infrastructure"
+      },
+      {
+        "title": "Established Miran Real Estate",
+        "description": "As a top-tier brand for residential and commercial property solutions in Erbil"
+      },
+      {
+        "title": "Successful Marketing Campaigns",
+        "description": "Spearheaded multiple campaigns across digital, TV, and out-of-home channels"
+      },
+      {
+        "title": "International Market Entry",
+        "description": "Helped secure investment and market entry for international clients into Kurdistan's property market"
+      },
+      {
+        "title": "Strong Professional Network",
+        "description": "Built a loyal customer base and network across Iraq, UAE, and beyond"
+      }
+    ]
+  },
+  "contact": {
+    "heading": "GET IN TOUCH",
+    "sub": "Partnerships, consultations, or media opportunities — let's connect and build something meaningful.",
+    "infoTitle": "Contact Information",
+    "email": "Email",
+    "whatsapp": "WhatsApp Business",
+    "location": "Location",
+    "locationValue": "Erbil, Kurdistan Region, Iraq",
+    "follow": "Follow",
+    "formTitle": "Send a Message",
+    "fullName": "Full Name",
+    "emailLabel": "Email Address",
+    "subject": "Subject",
+    "message": "Message",
+    "namePh": "Your full name",
+    "emailPh": "your.email@example.com",
+    "subjectPh": "What's this about?",
+    "messagePh": "Tell Miran about your project, partnership idea, or inquiry…",
+    "send": "Send Message",
+    "sending": "Sending…",
+    "success": "Thank you! We'll get back to you soon.",
+    "error": "There was an error sending your message. Please try again."
+  },
+  "footer": {
+    "tagline": "Vision-driven entrepreneur shaping the future of business in Kurdistan through innovation, integrity, and purpose.",
+    "quickLinks": "Quick Links",
+    "contact": "Contact",
+    "about": "About",
+    "vision": "Vision",
+    "achievements": "Achievements",
+    "articles": "Articles",
+    "contactSection": "Contact",
+    "erbil": "Erbil, Kurdistan Region",
+    "iraq": "Iraq",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service",
+    "sitemap": "Sitemap",
+    "rights": "© {{year}} Miran Safiny. All rights reserved.",
+    "backToTop": "Back to top"
+  },
+  "articles": {
+    "heading": "Recent Articles",
+    "searchPlaceholder": "Search articles…",
+    "readMore": "READ MORE",
+    "noResults": "No articles found matching your search.",
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{current}} of {{total}}",
+    "cardImageAlt": "Article image: {{title}}"
+  },
+  "article": {
+    "loading": "Loading article…",
+    "notFound": "Article not found.",
+    "by": "By",
+    "minRead": "{{n}} min read",
+    "related": "Related Articles",
+    "noneRelated": "No related articles yet.",
+    "share": "Share",
+    "linkCopied": "Link copied",
+    "noImage": "No image available",
+    "otherLanguages": "Other languages",
+    "heroVideoTitle": "Featured video"
+  },
+  "search": {
+    "open": "Search",
+    "placeholder": "SEARCH",
+    "hint": "Hit enter to search or ESC to close"
+  }
+}

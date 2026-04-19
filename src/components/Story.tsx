@@ -1,4 +1,5 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react'
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 
 /** === CONFIG === */
 const ACCENT = '#007BFF' // Miran blue
@@ -9,20 +10,19 @@ type TimelineItem = {
   title?: string
   text: string
   img: string
-  alt?: string
+  imgAlt: string
 }
-
-const timeline: TimelineItem[] = [
-  { year: '2004', title: 'Getting Started', text: 'At a young age, Miran starts helping in family business.', img: '/1992.jpg', alt: 'Young Miran' },
-  { year: '2014', title: 'Early Marketing', text: 'Started working in a Real Estate Firm and gained trust of more than thousands of clients.', img: '/2014.jpg', alt: 'Marketing in Erbil' },
-  { year: '2021', title: 'Scaling Ventures', text: 'Founded  Miran Real Estate with the vision of revolutionizing the industry', img: '/2021.jpeg', alt: 'Scaling ventures' },
-  { year: '2024', title: 'Founding Push', text: 'Expanded across marketing and real estate with key partnerships.', img: '/2024.JPG', alt: 'Founding ventures' }
-]
 
 /** === HELPERS === */
 const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n))
 
 const Story: React.FC = () => {
+  const { t } = useTranslation()
+  const timeline = useMemo(
+    () => t('story.timeline', { returnObjects: true }) as TimelineItem[],
+    [t]
+  )
+
   const sectionRef = useRef<HTMLElement | null>(null)
   const railRef = useRef<HTMLDivElement | null>(null)
 
@@ -145,14 +145,16 @@ const Story: React.FC = () => {
     rail.addEventListener('pointermove', onPointerMove) // must be non-passive to allow preventDefault
     rail.addEventListener('pointerup', endDrag)
     rail.addEventListener('pointercancel', endDrag)
-    rail.addEventListener('pointerleave', (e) => { if (isPointerDown) endDrag(e as any) })
+    rail.addEventListener('pointerleave', (e: PointerEvent) => {
+      if (isPointerDown) endDrag(e)
+    })
 
     return () => {
-      rail.removeEventListener('pointerdown', onPointerDown as any)
-      rail.removeEventListener('pointermove', onPointerMove as any)
-      rail.removeEventListener('pointerup', endDrag as any)
-      rail.removeEventListener('pointercancel', endDrag as any)
-      rail.removeEventListener('pointerleave', endDrag as any)
+      rail.removeEventListener('pointerdown', onPointerDown as EventListener)
+      rail.removeEventListener('pointermove', onPointerMove as EventListener)
+      rail.removeEventListener('pointerup', endDrag as EventListener)
+      rail.removeEventListener('pointercancel', endDrag as EventListener)
+      rail.removeEventListener('pointerleave', endDrag as EventListener)
       stopInertia()
     }
   }, [])
@@ -221,7 +223,7 @@ const Story: React.FC = () => {
       <div className="max-w-[120rem] mx-auto px-4 md:px-10">
         {/* Header */}
         <div className="relative inline-block mb-8 md:mb-12" style={{ animation: 'headerIn 700ms cubic-bezier(0.22,1,0.36,1) both' }}>
-          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight">MY STORY</h2>
+          <h2 className="text-3xl sm:text-4xl md:text-6xl font-black tracking-tight">{t('story.heading')}</h2>
           <span className="absolute left-0 -bottom-1 h-[0.375rem] w-0 bg-[var(--accent)] animate-[wipe_900ms_ease-out_forwards]" />
         </div>
 
@@ -271,9 +273,9 @@ const Story: React.FC = () => {
                   <figure className="w-full aspect-[4/3] relative" draggable={false}>
                     <img
                       src={item.img}
-                      alt={item.alt || item.year}
+                      alt={item.imgAlt || item.year}
                       loading={idx === 0 ? 'eager' : 'lazy'}
-                      fetchPriority={idx === 0 ? 'high' : ('auto' as any)}
+                      fetchPriority={idx === 0 ? 'high' : 'auto'}
                       decoding="async"
                       draggable={false}
                       className={[

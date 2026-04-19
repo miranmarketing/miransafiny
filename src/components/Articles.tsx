@@ -1,9 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
 import { Calendar, User, Search, ExternalLink } from 'lucide-react'
 import { supabase, Article } from '../lib/supabase'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { DEFAULT_LANG, isAppLang, localeToBcp47 } from '../utils/locale'
 
-const ACCENT = '##007BFF'
+const ACCENT = '#007BFF'
 
 // Skeleton
 const SkeletonArticleCard: React.FC = () => (
@@ -27,6 +29,10 @@ const SkeletonArticleCard: React.FC = () => (
 )
 
 const Articles: React.FC = () => {
+  const { t } = useTranslation()
+  const { lang: langParam } = useParams<{ lang?: string }>()
+  const lang = isAppLang(langParam) ? langParam : DEFAULT_LANG
+
   const [articles, setArticles] = useState<Article[]>([])
   const [loading, setLoading] = useState(true)
   const [searchTerm, setSearchTerm] = useState('')
@@ -40,23 +46,17 @@ const Articles: React.FC = () => {
   const chipRef = useRef<HTMLDivElement | null>(null)
   const cardsRef = useRef<Record<string, HTMLDivElement | null>>({})
 
-  useEffect(() => { fetchArticles() }, [page, searchTerm])
-  useEffect(() => {
-    const params = new URLSearchParams(location.search)
-    setSearchTerm(params.get('search') || '')
-  }, [location.search])
-  useEffect(() => { setPage(1) }, [searchTerm])
-
-  const fetchArticles = async () => {
+  const fetchArticles = useCallback(async () => {
     try {
       setLoading(true)
       const from = (page - 1) * pageSize
       const to = from + pageSize - 1
-      await new Promise(r => setTimeout(r, 120))
+      await new Promise((r) => setTimeout(r, 120))
 
       let query = supabase
         .from('articles')
         .select('*', { count: 'exact' })
+        .eq('locale', lang)
         .order('published_at', { ascending: false })
         .range(from, to)
 
@@ -65,14 +65,36 @@ const Articles: React.FC = () => {
       }
 
       const { data, error, count } = await query
-      if (error) { setArticles([]); setTotalArticles(0) }
-      else { setArticles(data || []); setTotalArticles(count || 0) }
-    } finally { setLoading(false) }
-  }
+      if (error) {
+        setArticles([])
+        setTotalArticles(0)
+      } else {
+        setArticles(data || [])
+        setTotalArticles(count || 0)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [page, pageSize, searchTerm, lang])
 
-  const openArticle = (a: Article) => navigate(`/articles/${a.slug}`)
+  useEffect(() => {
+    void fetchArticles()
+  }, [fetchArticles])
+  useEffect(() => {
+    const params = new URLSearchParams(location.search)
+    setSearchTerm(params.get('search') || '')
+  }, [location.search])
+  useEffect(() => {
+    setPage(1)
+  }, [searchTerm])
+
+  const openArticle = (a: Article) => navigate(`/${lang}/articles/${a.slug}`)
   const formatDate = (d: string) =>
-    new Date(d).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })
+    new Date(d).toLocaleDateString(localeToBcp47(lang), {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    })
 
   useEffect(() => {
     const el = chipRef.current
@@ -112,7 +134,7 @@ const Articles: React.FC = () => {
         <div className="mb-7 sm:mb-10">
           <div ref={chipRef} className="chip">
             <span className="relative z-10 px-3 sm:px-6 py-2.5 sm:py-4 text-lg sm:text-4xl md:text-5xl font-black uppercase tracking-wider text-white select-none">
-              Recent Articles
+              {t('articles.heading')}
             </span>
             <span className="chip-bg" />
           </div>
@@ -124,7 +146,7 @@ const Articles: React.FC = () => {
             <Search className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-5 text-white/60" />
             <input
               type="text"
-              placeholder="Search articles…"
+              placeholder={t('articles.searchPlaceholder')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-8 pr-2 py-3 bg-transparent text-white placeholder-white/40 outline-none border-none border-b-2"
@@ -163,7 +185,7 @@ const Articles: React.FC = () => {
                     {a.image_url ? (
                       <img
                         src={a.image_url}
-                        alt={a.title}
+                        alt={a.featured_image_alt?.trim() || t('articles.cardImageAlt', { title: a.title })}
                         className="absolute inset-0 w-full h-full object-cover transition-all duration-500 filter grayscale saturate-0 group-hover:grayscale-0 group-hover:saturate-100 group-hover:scale-[1.04]"
                         onError={(e) => {
                           e.currentTarget.onerror = null
@@ -197,7 +219,7 @@ const Articles: React.FC = () => {
 
                     <h3
                       className="text-sm sm:text-xl font-bold leading-snug sm:leading-tight mb-1.5 sm:mb-3 line-clamp-2 group-hover:underline underline-offset-4 decoration-[color:var(--accent)]"
-                      style={{ ['--accent' as any]: ACCENT }}
+                      style={{ '--accent': ACCENT } as React.CSSProperties}
                     >
                       {a.title}
                     </h3>
@@ -228,7 +250,7 @@ const Articles: React.FC = () => {
                       style={{ color: ACCENT }}
                       aria-label={`Read ${a.title}`}
                     >
-                      READ MORE
+                      {t('articles.readMore')}
                       <ExternalLink className="ml-2 h-4 w-4" />
                     </button>
                   </div>
@@ -236,7 +258,7 @@ const Articles: React.FC = () => {
               ))
             ) : (
               <div className="text-center py-12 col-span-full">
-                <p className="text-white/60 text-lg">No articles found matching your search.</p>
+                <p className="text-white/60 text-lg">{t('articles.noResults')}</p>
               </div>
             )}
           </div>
@@ -250,17 +272,20 @@ const Articles: React.FC = () => {
               disabled={page === 1 || loading}
               className="px-5 py-2 bg-[#040404] border border-white/10 text-white/90 disabled:opacity-50 hover:bg-white/5"
             >
-              Previous
+              {t('articles.previous')}
             </button>
             <span className="text-white/60">
-              Page {page} of {Math.ceil(totalArticles / pageSize)}
+              {t('articles.page', {
+                current: page,
+                total: Math.max(1, Math.ceil(totalArticles / pageSize)),
+              })}
             </span>
             <button
               onClick={() => setPage(page + 1)}
               disabled={page * pageSize >= totalArticles || loading}
               className="px-5 py-2 bg-[#040404] border border-white/10 text-white/90 disabled:opacity-50 hover:bg-white/5"
             >
-              Next
+              {t('articles.next')}
             </button>
           </div>
         )}

@@ -1,23 +1,35 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { Linkedin, Instagram, Globe, Search } from 'lucide-react'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useLocation, useNavigate, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { DEFAULT_LANG, isAppLang } from '../utils/locale'
+import { LanguageSwitcher } from './LanguageSwitcher'
 
 const ACCENT = '#007BFF'
 
-type NavItem = { label: string; href: `#${string}` }
+type NavItem = { labelKey: string; href: `#${string}` }
 
 const Sidebar: React.FC = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
+  const { lang: langParam } = useParams<{ lang?: string }>()
+  const lang = isAppLang(langParam) ? langParam : DEFAULT_LANG
+  const homePath = `/${lang}`
+
+  const isHome = useMemo(
+    () => /^\/(en|ar|ckb)\/?$/.test(location.pathname),
+    [location.pathname]
+  )
 
   const navItems: NavItem[] = useMemo(
     () => [
-      { label: 'HOME',         href: '#home' },
-      { label: 'ARTICLES',     href: '#articles' },
-      { label: 'ABOUT',        href: '#about' },
-      { label: 'MY STORY',     href: '#story' },
-      { label: 'ACHIEVEMENTS', href: '#achievements' },
-      { label: 'CONTACT',      href: '#contact' },
+      { labelKey: 'nav.home', href: '#home' },
+      { labelKey: 'nav.articles', href: '#articles' },
+      { labelKey: 'nav.about', href: '#about' },
+      { labelKey: 'nav.story', href: '#story' },
+      { labelKey: 'nav.achievements', href: '#achievements' },
+      { labelKey: 'nav.contact', href: '#contact' },
     ],
     []
   )
@@ -27,7 +39,7 @@ const Sidebar: React.FC = () => {
 
   /** Scroll-spy — active section by visibility */
   useEffect(() => {
-    if (location.pathname !== '/') return
+    if (!isHome) return
     const targets = navItems
       .map(n => document.querySelector(n.href))
       .filter((el): el is Element => !!el)
@@ -43,7 +55,11 @@ const Sidebar: React.FC = () => {
         }
         if (best && best.id !== active) {
           setActive(best.id)
-          try { window.history.replaceState(null, '', best.id) } catch {}
+          try {
+            window.history.replaceState(null, '', best.id)
+          } catch {
+            /* ignore */
+          }
         }
       },
       { threshold: [0.25, 0.5, 0.75, 1], rootMargin: '-20% 0px -40% 0px' }
@@ -53,15 +69,15 @@ const Sidebar: React.FC = () => {
     return () => io.disconnect()
     // do not include `active` to avoid re-initializing IO
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [location.pathname, navItems])
+  }, [location.pathname, navItems, isHome])
 
   /** If page loads on a hash, reflect it immediately */
   useEffect(() => {
-    if (location.pathname !== '/') return
+    if (!isHome) return
     const h = location.hash || '#home'
     const el = document.querySelector(h)
     if (el) setActive(h)
-  }, [location.pathname, location.hash])
+  }, [location.pathname, location.hash, isHome])
 
   /** Lock body scroll when mobile menu is open */
   useEffect(() => {
@@ -73,13 +89,13 @@ const Sidebar: React.FC = () => {
   }, [mobileOpen])
 
   const scrollTo = (hash: string) => {
-    if (location.pathname === '/') {
+    if (isHome) {
       const el = document.querySelector(hash)
       if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
       setActive(hash)
       setMobileOpen(false)
     } else {
-      navigate('/', { state: { scrollTo: hash } })
+      navigate(homePath, { state: { scrollTo: hash } })
       setMobileOpen(false)
     }
   }
@@ -96,11 +112,11 @@ const Sidebar: React.FC = () => {
       <div class="relative w-full max-w-xl">
         <input id="search-input" type="text"
           class="w-full bg-transparent text-white border-b-2 border-white px-0 py-3 text-4xl placeholder-white/50 focus:outline-none"
-          placeholder="SEARCH" />
+          placeholder="${t('search.placeholder')}" />
         <button class="absolute top-1/2 right-0 -translate-y-1/2 text-white/70 hover:text-white"
           onclick="document.getElementById('search-overlay').remove()">✕</button>
       </div>
-      <p class="text-white/50 text-xs mt-4">Hit enter to search or ESC to close</p>
+      <p class="text-white/50 text-xs mt-4">${t('search.hint')}</p>
     `
     document.body.appendChild(overlay)
     setTimeout(() => {
@@ -110,7 +126,7 @@ const Sidebar: React.FC = () => {
         input.focus()
         input.addEventListener('keydown', (e) => {
           if (e.key === 'Enter') {
-            navigate(`/articles?search=${encodeURIComponent(input.value)}`)
+            navigate(`/${lang}/articles?search=${encodeURIComponent(input.value)}`)
             overlay.remove()
           }
           if (e.key === 'Escape') overlay.remove()
@@ -140,7 +156,7 @@ const Sidebar: React.FC = () => {
           {navItems.map((item) => {
             const isActive = active === item.href
             return (
-              <div key={item.label} className="group relative w-full overflow-hidden">
+              <div key={item.labelKey} className="group relative w-full overflow-hidden">
                 <span
                   className={[
                     'absolute inset-0 transform origin-left transition-transform duration-300',
@@ -157,16 +173,18 @@ const Sidebar: React.FC = () => {
                     'text-white'
                   ].join(' ')}
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </button>
               </div>
             )
           })}
         </nav>
 
-        {/* Social / actions */}
-        <div className="px-5 pb-6 flex items-center gap-3 border-t border-white/10 pt-4">
-          <button onClick={handleSearchClick} className="hover:opacity-80" aria-label="Search">
+        {/* Language + social */}
+        <div className="px-5 pb-6 border-t border-white/10 pt-4 space-y-3">
+          <LanguageSwitcher />
+          <div className="flex items-center gap-3">
+          <button onClick={handleSearchClick} className="hover:opacity-80" aria-label={t('search.open')}>
             <Search className="w-5 h-5" />
           </button>
           <a className="hover:opacity-80" href="https://www.linkedin.com/in/miran-safiny-48b375229/" target="_blank" rel="noreferrer" aria-label="LinkedIn">
@@ -178,6 +196,7 @@ const Sidebar: React.FC = () => {
           <a className="hover:opacity-80" href="https://miransafiny.com" target="_blank" rel="noreferrer" aria-label="Website">
             <Globe className="w-5 h-5" />
           </a>
+          </div>
         </div>
       </aside>
 
@@ -192,7 +211,7 @@ const Sidebar: React.FC = () => {
           draggable="false"
         />
         <div className="flex items-center gap-3">
-          <button onClick={handleSearchClick} aria-label="Search" className="text-white/90">
+          <button onClick={handleSearchClick} aria-label={t('search.open')} className="text-white/90">
             <Search className="w-5 h-5" />
           </button>
           <button
@@ -236,7 +255,7 @@ const Sidebar: React.FC = () => {
           {navItems.map((item) => {
             const isActive = active === item.href
             return (
-              <div key={item.label} className="group relative w-full overflow-hidden">
+              <div key={item.labelKey} className="group relative w-full overflow-hidden">
                 <span
                   className={[
                     'absolute inset-0 transform origin-left transition-transform duration-300',
@@ -249,11 +268,15 @@ const Sidebar: React.FC = () => {
                   aria-current={isActive ? 'page' : undefined}
                   className="relative z-10 w-full text-left py-3 px-3 text-[17px] font-extrabold tracking-[0.18em] text-white"
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </button>
               </div>
             )
           })}
+        </div>
+
+        <div className="px-4 pb-2">
+          <LanguageSwitcher />
         </div>
 
         {/* Social row */}

@@ -2,7 +2,7 @@ import { createClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_DATABASE_URL
 const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY
-console.log(supabaseUrl)
+
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
 export interface Article {
@@ -14,8 +14,15 @@ export interface Article {
   author: string
   published_at: string
   created_at: string
+  updated_at?: string
   slug: string
   tags?: string[]
+  locale?: 'en' | 'ar' | 'ckb'
+  translation_group_id?: string
+  video_urls?: string[] | null
+  featured_image_alt?: string | null
+  /** If set, shown as hero instead of featured image */
+  hero_video_url?: string | null
 }
 
 

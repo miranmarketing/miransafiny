@@ -17,7 +17,7 @@ async function generateRoutes() {
     process.exit(1);
   }
 
-  const routes = ['/', ...data.map(a => `/article/${a.slug}`)];
+  const routes = ['/', '/en', '/ar', '/ckb', ...data.map((a) => `/en/articles/${a.slug}`)];
 
   const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   pkg.reactSnap = { ...pkg.reactSnap, routes };

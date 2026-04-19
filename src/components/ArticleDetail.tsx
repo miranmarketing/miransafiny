@@ -1,32 +1,53 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import DOMPurify from 'dompurify'
 import { supabase, Article } from '../lib/supabase'
 import { Share2, Facebook, Twitter, Linkedin, Link as LinkIcon, Clock } from 'lucide-react'
+import { DEFAULT_LANG, isAppLang, isRtl, localeToBcp47 } from '../utils/locale'
+import { toEmbedUrl } from '../utils/embedUrl'
+import { ensureImgAltAttributes } from '../utils/htmlImages'
 
-const ACCENT = '##007BFF'
+const ACCENT = '#007BFF'
+const SITE_ORIGIN = 'https://miransafiny.com'
+
+const purifyOpts: Parameters<typeof DOMPurify.sanitize>[1] = {
+  ADD_TAGS: ['iframe', 'figure', 'figcaption'],
+  ADD_ATTR: ['allow', 'allowfullscreen', 'frameborder', 'src', 'title', 'loading', 'referrerpolicy', 'alt'],
+}
 
 const ArticleDetail: React.FC = () => {
-  const { slug } = useParams<{ slug: string }>()
+  const { t } = useTranslation()
+  const { slug, lang: langParam } = useParams<{ slug: string; lang?: string }>()
   const navigate = useNavigate()
+  const lang = isAppLang(langParam) ? langParam : DEFAULT_LANG
+  const rtl = isRtl(lang)
 
   const [article, setArticle] = useState<Article | null>(null)
+  const [loadState, setLoadState] = useState<'loading' | 'ok' | 'missing'>('loading')
   const [related, setRelated] = useState<Article[]>([])
+  const [alternates, setAlternates] = useState<{ locale: string; slug: string }[]>([])
   const [showShareOptions, setShowShareOptions] = useState(false)
   const [copied, setCopied] = useState(false)
 
-  // Helpers
   const currentUrl = typeof window !== 'undefined' ? window.location.href : ''
+
+  const safeHtml = useMemo(() => {
+    if (!article?.content) return ''
+    const raw = DOMPurify.sanitize(article.content, purifyOpts)
+    return ensureImgAltAttributes(raw, article.featured_image_alt || article.title)
+  }, [article?.content, article?.featured_image_alt, article?.title])
+
   const readingTime = useMemo(() => {
     if (!article?.content) return null
     const text = article.content.replace(/<[^>]*>/g, ' ')
     const words = text.trim().split(/\s+/).length
-    const mins = Math.max(1, Math.round(words / 200))
-    return mins
+    return Math.max(1, Math.round(words / 200))
   }, [article?.content])
 
   const shareText = article
-    ? `Check out this article: ${article.title} – ${currentUrl}`
-    : `Check out this article: ${currentUrl}`
+    ? `${article.title} — ${currentUrl}`
+    : currentUrl
 
   const copyToClipboard = async () => {
     try {
@@ -47,42 +68,70 @@ const ArticleDetail: React.FC = () => {
     }
   }
 
-  // Fetch article
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
     let cancelled = false
     const run = async () => {
       if (!slug) return
-      const { data, error } = await supabase.from('articles').select('*').eq('slug', slug).single()
+      setLoadState('loading')
+      const { data, error } = await supabase
+        .from('articles')
+        .select('*')
+        .eq('slug', slug)
+        .eq('locale', lang)
+        .maybeSingle()
       if (cancelled) return
-      if (error) {
+      if (error || !data) {
         console.error('Error fetching article:', error)
         setArticle(null)
+        setLoadState('missing')
       } else {
         setArticle(data as Article)
+        setLoadState('ok')
       }
     }
-    run()
-    return () => { cancelled = true }
-  }, [slug])
+    void run()
+    return () => {
+      cancelled = true
+    }
+  }, [slug, lang])
 
-  // Fetch related
+  useEffect(() => {
+    let cancelled = false
+    const run = async () => {
+      if (!article?.translation_group_id) {
+        setAlternates([])
+        return
+      }
+      const { data } = await supabase
+        .from('articles')
+        .select('locale, slug')
+        .eq('translation_group_id', article.translation_group_id)
+      if (cancelled) return
+      setAlternates((data as { locale: string; slug: string }[]) || [])
+    }
+    void run()
+    return () => {
+      cancelled = true
+    }
+  }, [article?.translation_group_id])
+
   useEffect(() => {
     let cancelled = false
     const run = async () => {
       if (!article?.slug) return
 
       try {
-        const base = supabase.from('articles').select('*').neq('slug', article.slug)
-        let query = base
-        // @ts-expect-error optional category
-        if (article.category) query = query.eq('category', (article as any).category)
-        else if (article.author) query = query.eq('author', article.author)
+        const base = supabase
+          .from('articles')
+          .select('*')
+          .neq('slug', article.slug)
+          .eq('locale', lang)
+        const query = article.author ? base.eq('author', article.author) : base
 
         const { data, error } = await query.order('published_at', { ascending: false }).limit(6)
         if (cancelled) return
         if (error) {
-          console.warn('Related fetch fallback (recent):', error.message)
           const { data: recent } = await base.order('published_at', { ascending: false }).limit(6)
           setRelated(recent || [])
         } else {
@@ -92,11 +141,73 @@ const ArticleDetail: React.FC = () => {
         console.error(err)
       }
     }
-    run()
-    return () => { cancelled = true }
-  }, [article?.slug])
+    void run()
+    return () => {
+      cancelled = true
+    }
+  }, [article?.slug, article?.author, lang])
 
-  // Meta tags (OG/Twitter) – client-side best effort (edge function SSR is ideal)
+  const origin = typeof window !== 'undefined' ? window.location.origin : ''
+
+  const jsonLd = useMemo(() => {
+    if (!article) return null
+    const base = typeof window !== 'undefined' ? window.location.origin : SITE_ORIGIN
+    const published = article.published_at || article.created_at
+    const modified = article.updated_at || published
+    const imgUrl = article.image_url
+      ? article.image_url.startsWith('http')
+        ? article.image_url
+        : `${typeof window !== 'undefined' ? window.location.origin : SITE_ORIGIN}${article.image_url}`
+      : `${SITE_ORIGIN}/miran.png`
+    const keywords = (article.tags || []).join(', ')
+    const blog: Record<string, unknown> = {
+      '@type': 'BlogPosting',
+      '@id': `${currentUrl}#blogposting`,
+      headline: article.title,
+      description: article.excerpt || article.title,
+      image: {
+        '@type': 'ImageObject',
+        url: imgUrl,
+        caption: article.featured_image_alt || article.title,
+      },
+      datePublished: published,
+      dateModified: modified,
+      author: {
+        '@type': 'Person',
+        name: article.author || 'Miran Safiny',
+        url: SITE_ORIGIN,
+      },
+      publisher: {
+        '@type': 'Organization',
+        name: 'Miran Safiny',
+        url: SITE_ORIGIN,
+        logo: {
+          '@type': 'ImageObject',
+          url: `${SITE_ORIGIN}/miran.png`,
+        },
+      },
+      mainEntityOfPage: {
+        '@type': 'WebPage',
+        '@id': currentUrl,
+      },
+      inLanguage: localeToBcp47(lang),
+      isAccessibleForFree: true,
+      keywords: keywords || undefined,
+    }
+    const crumbs = {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${base}/${lang}` },
+        { '@type': 'ListItem', position: 2, name: 'Articles', item: `${base}/${lang}/articles` },
+        { '@type': 'ListItem', position: 3, name: article.title, item: currentUrl },
+      ],
+    }
+    return {
+      '@context': 'https://schema.org',
+      '@graph': [blog, crumbs],
+    }
+  }, [article, currentUrl, lang])
+
   useEffect(() => {
     const head = document.head
     const update = (prop: string, content: string, attr: 'property' | 'name' = 'property') => {
@@ -110,89 +221,189 @@ const ArticleDetail: React.FC = () => {
     }
     const remove = (prop: string, attr: 'property' | 'name' = 'property') => {
       const tag = head.querySelector(`meta[${attr}="${prop}"]`)
-      tag && head.removeChild(tag)
+      if (tag) head.removeChild(tag)
     }
-
-    document.title = article ? `${article.title} — Miran Safiny` : 'Loading — Miran Safiny'
+    document.title = article ? `${article.title} — Miran Safiny` : 'Miran Safiny'
     const url = typeof window !== 'undefined' ? window.location.href : ''
 
     if (article) {
+      const root = window.location.origin
+      const ogImage = article.image_url
+        ? article.image_url.startsWith('http')
+          ? article.image_url
+          : `${root}${article.image_url.startsWith('/') ? '' : '/'}${article.image_url}`
+        : `${root}/miran.png`
+
+      update('description', article.excerpt || article.title, 'name')
+      if (article.tags?.length) {
+        update('keywords', article.tags.join(', '), 'name')
+      } else {
+        remove('keywords', 'name')
+      }
       update('og:title', article.title)
       update('og:description', article.excerpt || '')
-      update('og:image', article.image_url || `${window.location.origin}/default-share-image.jpg`)
+      update('og:image', ogImage)
       update('og:url', url)
       update('og:type', 'article')
       update('og:site_name', 'Miran Safiny')
+      update('og:locale', localeToBcp47(lang).replace('-', '_'))
 
       update('twitter:card', 'summary_large_image', 'name')
-      update('twitter:site', '@miran_safiny', 'name')
-      update('twitter:creator', '@miran_safiny', 'name')
       update('twitter:title', article.title, 'name')
       update('twitter:description', article.excerpt || '', 'name')
-      update('twitter:image', article.image_url || `${window.location.origin}/default-share-image.jpg`, 'name')
+      update('twitter:image', ogImage, 'name')
+
+      const can = document.createElement('link')
+      can.setAttribute('rel', 'canonical')
+      can.href = url
+      can.dataset.articleCanonical = '1'
+      head.appendChild(can)
+
+      alternates.forEach((a) => {
+        const hrefLang = a.locale === 'ckb' ? 'ckb' : a.locale
+        const link = document.createElement('link')
+        link.setAttribute('rel', 'alternate')
+        link.setAttribute('hreflang', hrefLang)
+        link.href = `${origin}/${a.locale}/articles/${a.slug}`
+        link.dataset.articleAlt = '1'
+        head.appendChild(link)
+      })
+      const xDefault = document.createElement('link')
+      xDefault.setAttribute('rel', 'alternate')
+      xDefault.setAttribute('hreflang', 'x-default')
+      const enAlt = alternates.find((a) => a.locale === 'en')
+      xDefault.href = enAlt
+        ? `${origin}/en/articles/${enAlt.slug}`
+        : `${origin}/${lang}/articles/${article.slug}`
+      xDefault.dataset.articleAlt = '1'
+      head.appendChild(xDefault)
     }
 
     return () => {
       ;[
-        ['og:title','property'], ['og:description','property'], ['og:image','property'],
-        ['og:url','property'], ['og:type','property'], ['og:site_name','property'],
-        ['twitter:card','name'], ['twitter:site','name'], ['twitter:creator','name'],
-        ['twitter:title','name'], ['twitter:description','name'], ['twitter:image','name']
+        ['description', 'name'],
+        ['keywords', 'name'],
+        ['og:title', 'property'],
+        ['og:description', 'property'],
+        ['og:image', 'property'],
+        ['og:url', 'property'],
+        ['og:type', 'property'],
+        ['og:site_name', 'property'],
+        ['og:locale', 'property'],
+        ['twitter:card', 'name'],
+        ['twitter:title', 'name'],
+        ['twitter:description', 'name'],
+        ['twitter:image', 'name'],
       ].forEach(([p, a]) => remove(p, a as 'property' | 'name'))
+      head.querySelectorAll('link[data-article-alt="1"]').forEach((el) => el.remove())
+      head.querySelectorAll('link[data-article-canonical="1"]').forEach((el) => el.remove())
       document.title = 'Miran Safiny'
     }
-  }, [article])
+  }, [article, alternates, origin, lang])
 
-  if (!article) {
+  useEffect(() => {
+    if (!jsonLd) return
+    const s = document.createElement('script')
+    s.type = 'application/ld+json'
+    s.dataset.articleJsonLd = '1'
+    s.text = JSON.stringify(jsonLd)
+    document.head.appendChild(s)
+    return () => {
+      document.head.querySelectorAll('script[data-article-json-ld="1"]').forEach((el) => el.remove())
+    }
+  }, [jsonLd])
+
+  if (loadState === 'loading') {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center pt-24">
         <div className="flex items-center gap-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white/60" />
-          <p className="text-base">Loading article…</p>
+          <p className="text-base">{t('article.loading')}</p>
         </div>
       </div>
     )
   }
 
+  if (loadState === 'missing' || !article) {
+    return (
+      <div className="min-h-screen bg-black text-white flex flex-col items-center justify-center pt-24 px-6">
+        <p className="text-lg text-white/80">{t('article.notFound')}</p>
+        <button
+          type="button"
+          onClick={() => navigate(`/${lang}/articles`)}
+          className="mt-4 text-[#007BFF] underline"
+        >
+          {t('articles.heading')}
+        </button>
+      </div>
+    )
+  }
+
   const dateStr = article.published_at
-    ? new Date(article.published_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+    ? new Date(article.published_at).toLocaleDateString(localeToBcp47(lang), {
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      })
     : ''
 
+  const heroEmbed = article.hero_video_url ? toEmbedUrl(article.hero_video_url) : null
+  const featuredAlt = article.featured_image_alt?.trim() || article.title
+  const allEmbedVideos = (article.video_urls || []).map(toEmbedUrl).filter(Boolean) as string[]
+  const bodyVideos = heroEmbed ? allEmbedVideos.filter((v) => v !== heroEmbed) : allEmbedVideos
+
   return (
-    <section className="bg-black text-white pt-24 pb-16">
+    <section className="bg-black text-white pt-24 pb-16" dir={rtl ? 'rtl' : 'ltr'}>
       <div className="max-w-7xl mx-auto px-6">
-        {/* Grid: content + sidebar */}
         <div className="grid lg:grid-cols-12 gap-10">
-          {/* MAIN */}
           <article className="lg:col-span-8">
-            {/* Title */}
             <header className="mb-6">
               <div className="relative inline-block">
                 <h1 className="text-3xl md:text-4xl font-black tracking-tight">{article.title}</h1>
-                <span className="absolute left-0 -bottom-1 h-[6px] w-0 animate-[wipe_900ms_ease-out_forwards]" style={{ background: ACCENT }} />
+                <span
+                  className="absolute left-0 -bottom-1 h-[6px] w-0 animate-[wipe_900ms_ease-out_forwards]"
+                  style={{ background: ACCENT }}
+                />
               </div>
 
               <div className="mt-4 flex flex-wrap items-center gap-3 text-white/70">
-                {article.author && <span className="uppercase tracking-wide text-xs">By {article.author}</span>}
+                {article.author && (
+                  <span className="uppercase tracking-wide text-xs">
+                    {t('article.by')} {article.author}
+                  </span>
+                )}
                 {dateStr && <span className="text-white/50">• {dateStr}</span>}
                 {typeof readingTime === 'number' && (
                   <span className="flex items-center gap-1 text-white/60">
-                    <Clock className="h-4 w-4" /> {readingTime} min read
+                    <Clock className="h-4 w-4" /> {t('article.minRead', { n: readingTime })}
                   </span>
                 )}
               </div>
             </header>
 
-            {/* Hero image (BW -> color on hover) */}
-            {article.image_url ? (
+            {heroEmbed ? (
+              <figure className="mb-8 relative aspect-video w-full border border-white/10 overflow-hidden bg-black">
+                <iframe
+                  src={heroEmbed}
+                  className="absolute inset-0 h-full w-full"
+                  title={t('article.heroVideoTitle')}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                  allowFullScreen
+                  loading="eager"
+                  referrerPolicy="strict-origin-when-cross-origin"
+                />
+                <span className="absolute top-0 left-0 h-[2px] w-20 pointer-events-none" style={{ background: ACCENT }} />
+                <span className="absolute bottom-0 right-0 h-[2px] w-20 pointer-events-none" style={{ background: ACCENT }} />
+              </figure>
+            ) : article.image_url ? (
               <figure className="group mb-8 relative aspect-[16/9] bg-white/[0.03] border border-white/10 overflow-hidden">
                 <img
                   src={article.image_url}
-                  alt={article.title}
+                  alt={featuredAlt}
                   className={[
                     'absolute inset-0 h-full w-full object-cover',
                     'filter none saturate-100 transition-all duration-500',
-                    'group-hover:grayscale-0 group-hover:saturate-100 group-hover:scale-[1.02]'
+                    'group-hover:grayscale-0 group-hover:saturate-100 group-hover:scale-[1.02]',
                   ].join(' ')}
                   style={{ willChange: 'transform, filter' }}
                   onError={(e) => {
@@ -205,28 +416,55 @@ const ArticleDetail: React.FC = () => {
               </figure>
             ) : (
               <div className="mb-8 relative aspect-[16/9] bg-white/[0.03] border border-white/10 overflow-hidden flex items-center justify-center">
-                <span className="text-white/50">No image available</span>
+                <span className="text-white/50">{t('article.noImage')}</span>
                 <span className="absolute top-0 left-0 h-[2px] w-20" style={{ background: ACCENT }} />
                 <span className="absolute bottom-0 right-0 h-[2px] w-20" style={{ background: ACCENT }} />
               </div>
             )}
 
-            {/* Content */}
+            {bodyVideos.length > 0 && (
+              <div className="mb-10 space-y-6">
+                {bodyVideos.map((src) => (
+                  <div
+                    key={src}
+                    className="relative aspect-video w-full overflow-hidden border border-white/10 bg-black"
+                  >
+                    <iframe
+                      src={src}
+                      className="absolute inset-0 h-full w-full"
+                      title={article.title}
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                      allowFullScreen
+                      loading="lazy"
+                      referrerPolicy="strict-origin-when-cross-origin"
+                    />
+                  </div>
+                ))}
+              </div>
+            )}
+
             <div
-              className="prose prose-invert max-w-none prose-headings:font-bold prose-a:text-[color:var(--accent)] text-lg"
-              style={{ ['--accent' as any]: ACCENT }}
+              className={[
+                'article-body prose prose-invert max-w-none',
+                'prose-headings:font-black prose-headings:tracking-tight',
+                'prose-p:text-[1.05rem] prose-p:leading-relaxed md:prose-p:text-[1.125rem]',
+                'prose-a:text-[#007BFF] prose-a:no-underline hover:prose-a:underline',
+                'prose-blockquote:border-[#007BFF] prose-blockquote:text-white/90',
+                'prose-figure:my-8 prose-img:rounded-sm prose-img:border prose-img:border-white/10',
+                rtl ? 'text-right' : 'text-left',
+              ].join(' ')}
             >
-              <div dangerouslySetInnerHTML={{ __html: article.content || '' }} />
+              <div dangerouslySetInnerHTML={{ __html: safeHtml }} />
             </div>
 
-            {/* Share */}
-            <div className="mt-10 pt-6 border-top border-white/10">
+            <div className="mt-10 pt-6 border-t border-white/10">
               <button
+                type="button"
                 onClick={() => setShowShareOptions((v) => !v)}
-                className="inline-flex items-center gap-2 px-4 py-2 font-semibold"
-                style={{ backgroundImage: `linear-gradient(90deg, ${ACCENT}, #35d7ff)`, color: 'white' }}
+                className="inline-flex items-center gap-2 px-4 py-2 font-semibold text-white"
+                style={{ backgroundImage: `linear-gradient(90deg, ${ACCENT}, #35d7ff)` }}
               >
-                <Share2 className="h-5 w-5" /> Share
+                <Share2 className="h-5 w-5" /> {t('article.share')}
               </button>
 
               {showShareOptions && (
@@ -236,7 +474,7 @@ const ArticleDetail: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center bg-[#25D366] text-white"
-                    aria-label="Share on WhatsApp"
+                    aria-label="WhatsApp"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" className="w-5 h-5" fill="currentColor">
                       <path d="M19.11 17.52c-.27-.14-1.56-.77-1.8-.86-.24-.09-.41-.14-.58.14-.17.27-.66.86-.81 1.04-.15.18-.3.21-.57.07-.27-.14-1.12-.41-2.14-1.31-.79-.7-1.32-1.57-1.47-1.84-.15-.27-.02-.41.11-.54.11-.11.24-.28.36-.42.12-.14.15-.24.23-.4.08-.16.04-.3-.02-.42-.06-.12-.58-1.4-.8-1.92-.21-.5-.42-.43-.58-.44l-.5-.01c-.17 0-.44.06-.67.3-.23.24-.88.86-.88 2.1s.9 2.44 1.02 2.61c.12.17 1.77 2.7 4.3 3.79.6.26 1.06.41 1.42.52.59.19 1.12.16 1.54.1.47-.07 1.56-.64 1.78-1.25.22-.61.22-1.13.15-1.24-.06-.11-.24-.18-.5-.31z" />
@@ -249,9 +487,9 @@ const ArticleDetail: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center bg-[#1877F2] text-white"
-                    aria-label="Share on Facebook"
+                    aria-label="Facebook"
                   >
-                    <Facebook className="w-5 h-5" />
+                    <Facebook className="h-5 w-5" />
                   </a>
 
                   <a
@@ -259,7 +497,7 @@ const ArticleDetail: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center bg-[#1DA1F2] text-white"
-                    aria-label="Share on Twitter"
+                    aria-label="Twitter"
                   >
                     <Twitter className="w-5 h-5" />
                   </a>
@@ -269,13 +507,14 @@ const ArticleDetail: React.FC = () => {
                     target="_blank"
                     rel="noopener noreferrer"
                     className="w-10 h-10 flex items-center justify-center bg-[#0A66C2] text-white"
-                    aria-label="Share on LinkedIn"
+                    aria-label="LinkedIn"
                   >
                     <Linkedin className="w-5 h-5" />
                   </a>
 
                   <button
-                    onClick={copyToClipboard}
+                    type="button"
+                    onClick={() => void copyToClipboard()}
                     className="w-10 h-10 flex items-center justify-center bg-white text-black"
                     aria-label="Copy link"
                     title="Copy link"
@@ -283,44 +522,53 @@ const ArticleDetail: React.FC = () => {
                     <LinkIcon className="w-5 h-5" />
                   </button>
 
-                  <span className={`ml-2 text-sm transition-opacity ${copied ? 'opacity-100' : 'opacity-0'}`} style={{ color: ACCENT }}>
-                    Link copied
+                  <span
+                    className={`ml-2 text-sm transition-opacity ${copied ? 'opacity-100' : 'opacity-0'}`}
+                    style={{ color: ACCENT }}
+                  >
+                    {t('article.linkCopied')}
                   </span>
                 </div>
               )}
             </div>
           </article>
 
-          {/* SIDEBAR: Related */}
           <aside className="lg:col-span-4">
-            <div className="sticky top-24">
-              <div className="mb-4">
-                <h2 className="text-lg font-extrabold tracking-tight">Related Articles</h2>
+            <div className="sticky top-24 space-y-8">
+              <div>
+                <h2 className="text-lg font-extrabold tracking-tight">{t('article.related')}</h2>
                 <div className="h-[3px] w-16 mt-2" style={{ background: ACCENT }} />
               </div>
 
               {related.length === 0 && (
-                <div className="text-white/60 text-sm">No related articles yet.</div>
+                <div className="text-white/60 text-sm">{t('article.noneRelated')}</div>
               )}
 
               <ul className="space-y-4">
                 {related.map((r) => {
                   const rDate = r.published_at
-                    ? new Date(r.published_at).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric' })
+                    ? new Date(r.published_at).toLocaleDateString(localeToBcp47(lang), {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric',
+                      })
                     : ''
                   return (
-                    <li key={r.slug}>
-                      <button onClick={() => navigate(`/articles/${r.slug}`)} className="group w-full text-left">
+                    <li key={r.id}>
+                      <button
+                        type="button"
+                        onClick={() => navigate(`/${lang}/articles/${r.slug}`)}
+                        className="group w-full text-left"
+                      >
                         <div className="grid grid-cols-3 gap-3 items-center">
-                          {/* Thumbnail (BW -> color on hover) */}
                           <div className="col-span-1 relative aspect-[4/3] bg-white/[0.03] border border-white/10 overflow-hidden">
                             <img
                               src={r.image_url || `https://placehold.co/400x300/0b0b0b/ffffff?text=Article`}
-                              alt={r.title}
+                              alt={r.featured_image_alt?.trim() || r.title}
                               className={[
                                 'absolute inset-0 h-full w-full object-cover transition-all duration-300',
                                 'filter grayscale saturate-0',
-                                'group-hover:grayscale-0 group-hover:saturate-100 group-hover:scale-[1.03]'
+                                'group-hover:grayscale-0 group-hover:saturate-100 group-hover:scale-[1.03]',
                               ].join(' ')}
                               style={{ willChange: 'transform, filter' }}
                             />
@@ -329,8 +577,7 @@ const ArticleDetail: React.FC = () => {
 
                           <div className="col-span-2">
                             <h3
-                              className="text-sm font-semibold leading-snug group-hover:underline decoration-[color:var(--accent)] underline-offset-4"
-                              style={{ ['--accent' as any]: ACCENT }}
+                              className="text-sm font-semibold leading-snug group-hover:underline decoration-[#007BFF] underline-offset-4"
                             >
                               {r.title}
                             </h3>
@@ -348,16 +595,13 @@ const ArticleDetail: React.FC = () => {
         </div>
       </div>
 
-      {/* Local styles */}
       <style>{`
         @keyframes wipe { from { width: 0 } to { width: 100% } }
-
-        /* OPTIONAL: make any images inside the rich text go BW -> color on hover */
-        .prose img {
+        .article-body.prose img {
           filter: grayscale(100%) saturate(0);
           transition: filter .35s ease, transform .35s ease;
         }
-        .prose img:hover {
+        .article-body.prose img:hover {
           filter: none saturate(100%);
           transform: translateZ(0);
         }

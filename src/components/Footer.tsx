@@ -1,59 +1,59 @@
 import React from 'react'
 import { Linkedin, Instagram, Facebook, MessageSquare, ArrowUpRight, ArrowUp } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { useNavigate, useParams, useLocation } from 'react-router-dom'
+import { DEFAULT_LANG, isAppLang } from '../utils/locale'
 
-const ACCENT = '#007BFF' // Miran blue
+const ACCENT = '#007BFF'
 
-type Social = { icon: React.ComponentType<React.SVGProps<SVGSVGElement>>, url: string, name: string }
-type Quick = { name: string, href: string }
+type Social = { icon: React.ComponentType<React.SVGProps<SVGSVGElement>>; url: string; name: string }
 
 const socialLinks: Social[] = [
-  { icon: Linkedin,      url: 'https://www.linkedin.com/in/miran-safiny-48b375229/', name: 'LinkedIn' },
-  { icon: Instagram,     url: 'https://instagram.com/miransafiny',                    name: 'Instagram' },
-  { icon: Facebook,      url: 'https://www.facebook.com/Miransafiny',                 name: 'Facebook' },
-  { icon: MessageSquare, url: 'https://wa.me/9647504459704',                          name: 'WhatsApp' },
-]
-
-const quickLinks: Quick[] = [
-  { name: 'About',        href: '#about' },
-  { name: 'Vision',       href: '#vision' },
-  { name: 'Achievements', href: '#achievements' },
-  { name: 'Articles',     href: '#articles' },
-  { name: 'Contact',      href: '#contact' },
+  { icon: Linkedin, url: 'https://www.linkedin.com/in/miran-safiny-48b375229/', name: 'LinkedIn' },
+  { icon: Instagram, url: 'https://instagram.com/miransafiny', name: 'Instagram' },
+  { icon: Facebook, url: 'https://www.facebook.com/Miransafiny', name: 'Facebook' },
+  { icon: MessageSquare, url: 'https://wa.me/9647504459704', name: 'WhatsApp' },
 ]
 
 const Footer: React.FC = () => {
+  const { t } = useTranslation()
+  const navigate = useNavigate()
+  const location = useLocation()
+  const { lang: langParam } = useParams<{ lang?: string }>()
+  const lang = isAppLang(langParam) ? langParam : DEFAULT_LANG
+
   const scrollToTop = () => window.scrollTo({ top: 0, behavior: 'smooth' })
 
-  const scrollToSection = (hash: string) => {
+  const goSection = (hash: string) => {
     const id = hash.startsWith('#') ? hash.slice(1) : hash
-    const el = document.getElementById(id)
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    if (location.pathname === `/${lang}` || location.pathname === `/${lang}/`) {
+      const el = document.getElementById(id)
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else {
+      navigate(`/${lang}`, { state: { scrollTo: `#${id}` } })
+    }
   }
 
   return (
-    <footer
-      className="relative text-white"
-      style={{ background: 'black' }}
-    >
-      {/* Glow background */}
+    <footer className="relative text-white" style={{ background: 'black' }}>
       <div
         aria-hidden
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            'radial-gradient(60rem 30rem at 15% -10%, rgba(0,191,238,0.10), transparent 60%), radial-gradient(40rem 24rem at 90% 0%, rgba(0,191,238,0.07), transparent 60%)'
+            'radial-gradient(60rem 30rem at 15% -10%, rgba(0,191,238,0.10), transparent 60%), radial-gradient(40rem 24rem at 90% 0%, rgba(0,191,238,0.07), transparent 60%)',
         }}
       />
 
-      {/* Back-to-top FAB */}
       <button
+        type="button"
         onClick={scrollToTop}
-        aria-label="Back to top"
+        aria-label={t('footer.backToTop')}
         className="group absolute -top-6 left-1/2 -translate-x-1/2 h-12 w-12 rounded-full shadow-xl flex items-center justify-center
                    ring-1 ring-white/15 transition-transform hover:-translate-y-0.5 focus:outline-none focus-visible:ring-4"
         style={{
           backgroundImage: `linear-gradient(180deg, ${ACCENT}, #35d7ff)`,
-          boxShadow: '0 10px 30px rgba(0,191,238,0.35)'
+          boxShadow: '0 10px 30px rgba(0,191,238,0.35)',
         }}
       >
         <ArrowUp className="h-5 w-5 text-black" />
@@ -61,15 +61,15 @@ const Footer: React.FC = () => {
 
       <div className="relative max-w-7xl mx-auto px-6 pt-20 pb-10">
         <div className="grid md:grid-cols-4 gap-10 md:gap-12 mb-10">
-          {/* Brand */}
           <div className="md:col-span-2">
             <div className="relative inline-block">
               <h3 className="text-2xl font-extrabold tracking-tight">Miran Safiny</h3>
-              <span className="absolute left-0 -bottom-1 h-[6px] w-0 animate-[wipe_900ms_ease-out_forwards]" style={{ background: ACCENT }} />
+              <span
+                className="absolute left-0 -bottom-1 h-[6px] w-0 animate-[wipe_900ms_ease-out_forwards]"
+                style={{ background: ACCENT }}
+              />
             </div>
-            <p className="mt-5 text-white/70 max-w-md">
-              Vision-driven entrepreneur shaping the future of business in Kurdistan through innovation, integrity, and purpose.
-            </p>
+            <p className="mt-5 text-white/70 max-w-md">{t('footer.tagline')}</p>
 
             <div className="mt-6 flex gap-3">
               {socialLinks.map((s, i) => (
@@ -93,18 +93,24 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Quick Links */}
           <div>
-            <h4 className="text-lg font-semibold">Quick Links</h4>
+            <h4 className="text-lg font-semibold">{t('footer.quickLinks')}</h4>
             <div className="mt-4 grid grid-cols-1 gap-2">
-              {quickLinks.map((q, idx) => (
+              {[
+                { key: 'about', hash: 'about' },
+                { key: 'vision', hash: 'quote' },
+                { key: 'achievements', hash: 'achievements' },
+                { key: 'articles', hash: 'articles' },
+                { key: 'contact', hash: 'contact' },
+              ].map((q) => (
                 <button
-                  key={idx}
-                  onClick={() => scrollToSection(q.href)}
+                  key={q.key}
+                  type="button"
+                  onClick={() => goSection(q.hash)}
                   className="group inline-flex items-center gap-2 text-white/70 hover:text-white transition-colors focus:outline-none focus-visible:ring-4 "
                 >
                   <span className="underline decoration-transparent group-hover:decoration-current underline-offset-4">
-                    {q.name}
+                    {t(`footer.${q.key}`)}
                   </span>
                   <ArrowUpRight className="h-4 w-4 opacity-0 -translate-y-0.5 group-hover:opacity-100 group-hover:translate-y-0 transition-all" />
                 </button>
@@ -112,30 +118,38 @@ const Footer: React.FC = () => {
             </div>
           </div>
 
-          {/* Contact */}
           <div>
-            <h4 className="text-lg font-semibold">Contact</h4>
+            <h4 className="text-lg font-semibold">{t('footer.contactSection')}</h4>
             <div className="mt-4 space-y-2 text-white/70">
-              <p>Erbil, Kurdistan Region</p>
-              <p>Iraq</p>
-              <a href="mailto:info@miransafiny.com" className="hover:text-white transition-colors">info@miransafiny.com</a><br />
-              <a href="https://wa.me/9647504459704" className="hover:text-white transition-colors">+964 750 445 9704</a>
+              <p>{t('footer.erbil')}</p>
+              <p>{t('footer.iraq')}</p>
+              <a href="mailto:info@miransafiny.com" className="hover:text-white transition-colors">
+                info@miransafiny.com
+              </a>
+              <br />
+              <a href="https://wa.me/9647504459704" className="hover:text-white transition-colors">
+                +964 750 445 9704
+              </a>
             </div>
           </div>
         </div>
 
-        {/* Divider */}
         <div className="border-t border-white/10 pt-6 flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-sm text-white/60">© {new Date().getFullYear()} Miran Safiny. All rights reserved.</p>
+          <p className="text-sm text-white/60">{t('footer.rights', { year: new Date().getFullYear() })}</p>
           <nav className="flex gap-6 text-sm text-white/60">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
-            <a href="#" className="hover:text-white transition-colors">Sitemap</a>
+            <a href="#" className="hover:text-white transition-colors">
+              {t('footer.privacy')}
+            </a>
+            <a href="#" className="hover:text-white transition-colors">
+              {t('footer.terms')}
+            </a>
+            <a href="/sitemap.xml" className="hover:text-white transition-colors">
+              {t('footer.sitemap')}
+            </a>
           </nav>
         </div>
       </div>
 
-      {/* Local styles */}
       <style>{`
         @keyframes wipe { from { width: 0 } to { width: 100% } }
       `}</style>
